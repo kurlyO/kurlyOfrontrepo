@@ -23,7 +23,7 @@ function InputComp(props) {
 
 function SignUp() {
   const [join, setJoin] = useState({
-    memberId: '',
+    account: '',
     password: '',
     name: '',
     email: '',
@@ -38,14 +38,25 @@ function SignUp() {
 
   // })
 
-  const mutate = useMutation(sitejoin);
+  // const mutate = useMutation(sitejoin)
+  const mutate = useMutation(sitejoin, {
+    onError: (error) => {
+      if (error.response.status === 409) {
+        alert('중복된 아이디나 닉네임이 있습니다.');
+      } else {
+        alert('회원가입 실패');
+        console.log(error);
+      }
+      console.log(error);
+    },
+  });
 
   const memberIdRegEx = /^[a-z0-9]{4,10}$/;
   const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/;
   const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
-  const validatememberId = (memberId) => {
-    return memberIdRegEx.test(memberId);
+  const validatememberId = (account) => {
+    return memberIdRegEx.test(account);
   };
   const validatepassword = (password) => {
     return passwordRegEx.test(password);
@@ -64,12 +75,12 @@ function SignUp() {
 
   const joinButtonHandler = async (e) => {
     e.preventDefault();
-    const { memberId, password, name, email, address, phone, gender, birth } = join;
-    // if (!memberId || !password || !name || !email || !address) {
+    const { account, password, name, email, address, phone, gender, birth } = join;
+    // if (!account || !password || !name || !email || !address) {
     //   alert('칸을 기입해주세요');
     //   return;
     // }
-    // if (!validatememberId(memberId)) {
+    // if (!validatememberId(account)) {
     //   alert('4~10길이의 소문자, 숫자만 가능하다');
     //   return;
     // }
@@ -84,7 +95,7 @@ function SignUp() {
     //   return;
     // }
     const obj = {
-      memberId,
+      account,
       password,
       name,
       email,
@@ -114,7 +125,7 @@ function SignUp() {
             </StOneTextBox>
             <StSignInput
               type="text"
-              name={'memberId'}
+              name={'account'}
               placeholder="아이디를 입력해주세요"
               onChange={handleInputChange}
             />

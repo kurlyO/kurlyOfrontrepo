@@ -4,21 +4,19 @@ import { StInput } from '../elements/Input';
 import { StPuppleButton, StWhiteButton } from '../elements/Button';
 import { useParams } from 'react-router-dom';
 
+function Detail() {
+  const pam = useParams();
 
-function Detail(){
- const pam = useParams()
-
-    return(<>
-    <PageContainer>
-    <h3>
-        {pam.id}
-    </h3>
-    </PageContainer>
-    </>)   
+  return (
+    <>
+      <PageContainer>
+        <h3>{pam.id}</h3>
+      </PageContainer>
+    </>
+  );
 }
 
-export default Detail
-
+export default Detail;
 
 //div 순서
 /* 
@@ -34,16 +32,14 @@ export default Detail
 */
 
 const PageContainer = styled.div`
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-padding-top: 15px;
-padding-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px;
+  padding-bottom: 15px;
 
   & > *:not(:first-child) {
     margin-top: 15px;
   }
-`
-
-const
+`;
