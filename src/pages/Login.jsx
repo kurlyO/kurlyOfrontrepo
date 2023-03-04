@@ -9,11 +9,11 @@ import { setCookie } from '../utils/cookies';
 import moment from 'moment/moment';
 
 function Login() {
-  const [memberId, setMemberId] = useState('');
+  const [account, setaccount] = useState('');
   const [password, setPassweord] = useState('');
 
   const IdOnchangeHandler = (e) => {
-    setMemberId(e.target.value);
+    setaccount(e.target.value);
   };
 
   const passwordOnchangeHandler = (e) => {
@@ -26,24 +26,25 @@ function Login() {
   //여기서 login데이터를 담어서 비동기 함수로 쓴 이유
   const loginHandler = async () => {
     const loginData = {
-      memberId: '',
-      password: '',
+      account: account,
+      password: password,
     };
-    if (!memberId || !password) {
+    if (!account || !password) {
       alert('값을 입력하셔야 하셔요');
       return;
     }
     try {
       const response = await mutate.mutateAsync(loginData); //q비동기 함수를 간편하게 호출 할 수 있게 해주는 함수
       const { status, message } = response.data;
-      if (status === true) {
+      console.log(response.data);
+      if (status == true) {
         alert('드디어 로그인 성공!!!');
         const expires = moment().add('60', 'm').toDate();
         const token = response.headers.authorization;
         setCookie('token', token, { expires, path: '/', sameSite: 'strict' });
         navigate('/');
       }
-    } catch {
+    } catch (error) {
       alert('아이디, 비밀번호를 확인해주셔요..?');
     }
   };
@@ -52,7 +53,7 @@ function Login() {
     <StContainer>
       <StForm>
         <div>로그인페이지</div>
-        <StLoginInput value={memberId} onChange={IdOnchangeHandler} />
+        <StLoginInput value={account} onChange={IdOnchangeHandler} />
         <StLoginInput value={password} onChange={passwordOnchangeHandler} />
       </StForm>
       <StButtonDiv>
