@@ -26,8 +26,8 @@ function Login() {
   //여기서 login데이터를 담어서 비동기 함수로 쓴 이유
   const loginHandler = async () => {
     const loginData = {
-      memberId,
-      password,
+      memberId: '',
+      password: '',
     };
     if (!memberId || !password) {
       alert('값을 입력하셔야 하셔요');

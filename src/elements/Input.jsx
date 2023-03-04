@@ -15,9 +15,23 @@ export const StLoginInput = styled.input`
 
 export const StSignInputBox = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   width: 100%;
   padding: 10px 20px;
+`;
+
+export const StOneTextBox = styled.div`
+  background-color: aqua;
+  width: 139px;
+  padding-top: 12px;
+`;
+
+export const StTwoBox = styled.div`
+  font-weight: 500;
+  color: rgb(51, 51, 51);
+  line-height: 20px;
 `;
 
 export const StSignInput = styled.input`
