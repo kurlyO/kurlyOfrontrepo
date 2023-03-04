@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const StLoginInput = styled.input`
   width: 100%;
@@ -13,28 +13,47 @@ export const StLoginInput = styled.input`
   outline: none;
 `;
 
-export const StSignInputBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+export const StInputBox = styled.div`
+  display: inline-flex;
   width: 100%;
+  ${(props) =>
+    props.showBorder &&
+    css`
+      border-top: 2px solid black;
+    `}
   padding: 10px 20px;
 `;
 
-export const StOneTextBox = styled.div`
-  background-color: aqua;
+export const StInputTextBox = styled.div`
   width: 139px;
   padding-top: 12px;
 `;
 
-export const StTwoBox = styled.div`
-  font-weight: 500;
+export const StInputText = styled.div`
+  font-weight: 1000;
   color: rgb(51, 51, 51);
   line-height: 20px;
 `;
 
-export const StSignInput = styled.input`
-  width: 320px;
-  height: 43px;
+export const StInput = styled.input`
+  width: 349px;
+  height: 46px;
+  padding: 0px 11px 1px 15px;
+  border-radius: 4px;
+  border: 1px solid rgba(221, 221, 221);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgb(51, 51, 51);
+  outline: none;
+  box-sizing: border-box;
+`;
+
+export const StDupButton = styled.button`
+  width: 120px;
+  height: 44px;
+  margin-left: 8px;
+  border-radius: 3px;
+  font-weight: 1000;
+  color: #4b0e4b;
 `;
