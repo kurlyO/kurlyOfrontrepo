@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from 'react-query';
 import styled from 'styled-components';
 import { StSignInputBox, StSignInput, StOneTextBox, StTwoBox } from '../elements/Input';
+import { sitejoin } from '../api/axios';
 
 function InputComp(props) {
   return (
@@ -37,7 +38,7 @@ function SignUp() {
 
   // })
 
-  const mutate = useMutation();
+  const mutate = useMutation(sitejoin);
 
   const memberIdRegEx = /^[a-z0-9]{4,10}$/;
   const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/;
@@ -61,26 +62,43 @@ function SignUp() {
     });
   };
 
-  const joinButtonHandler = (e) => {
+  const joinButtonHandler = async (e) => {
     e.preventDefault();
     const { memberId, password, name, email, address, phone, gender, birth } = join;
     // if (!memberId || !password || !name || !email || !address) {
     //   alert('칸을 기입해주세요');
     //   return;
     // }
-    if (!validatememberId(memberId)) {
-      alert('4~10길이의 소문자, 숫자만 가능하다');
-      return;
-    }
-    if (!validatepassword(password)) {
-      alert(
-        '영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 15자의 비밀번호여야 합니다'
-      );
-      return;
-    }
-    if (!validateemail(email)) {
-      alert('이메일 형식으로 맞게 짜줘');
-      return;
+    // if (!validatememberId(memberId)) {
+    //   alert('4~10길이의 소문자, 숫자만 가능하다');
+    //   return;
+    // }
+    // if (!validatepassword(password)) {
+    //   alert(
+    //     '영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 15자의 비밀번호여야 합니다'
+    //   );
+    //   return;
+    // }
+    // if (!validateemail(email)) {
+    //   alert('이메일 형식으로 맞게 짜줘');
+    //   return;
+    // }
+    const obj = {
+      memberId,
+      password,
+      name,
+      email,
+      address,
+      phone,
+      gender,
+      birth,
+    };
+    console.log(obj);
+    try {
+      const response = await mutate.mutateAsync(obj);
+      console.log(response);
+    } catch (error) {
+      console.log('에러입니다');
     }
   };
 

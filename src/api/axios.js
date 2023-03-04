@@ -4,4 +4,9 @@ const sitelogin = async (payload) => {
   return response;
 };
 
-export { sitelogin };
+export { sitelogin, sitejoin };
+
+const sitejoin = async (payload) => {
+  const response = await axios.post('http://3.35.46.239/api/member/signup', payload);
+  return response;
+};
