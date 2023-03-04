@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const StInput = styled.input`
+export const StLoginInput = styled.input`
   width: 100%;
   height: 54px;
   font-size: 14px;
@@ -11,4 +11,16 @@ export const StInput = styled.input`
   line-height: 1.5;
   color: rgb(51, 51, 51);
   outline: none;
+`;
+
+export const StSignInputBox = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 20px;
+`;
+
+export const StSignInput = styled.input`
+  width: 320px;
+  height: 43px;
 `;

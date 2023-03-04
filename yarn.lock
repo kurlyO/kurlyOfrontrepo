@@ -6664,6 +6664,11 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 morgan@^1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/morgan/-/morgan-1.10.0.tgz#091778abc1fc47cd3509824653dae1faab6b17d7"
@@ -7900,11 +7905,6 @@ react-app-polyfill@^3.0.0:
     raf "^3.4.1"
     regenerator-runtime "^0.13.9"
     whatwg-fetch "^3.6.2"
-
-react-app@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/react-app/-/react-app-1.1.2.tgz#ae608159bdbdb166bc5fcc9c0d97b2219365dc1f"
-  integrity sha512-4MrTmJWu3WDX3upmEyyHGhA15L0qtqJBDMoVZRjd5hrf8lEoX/ja/EOG31eppiyRTWpZGGigCwb2lzsI6ZKDFQ==
 
 react-cookie@^4.1.1:
   version "4.1.1"
