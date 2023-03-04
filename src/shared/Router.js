@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import ShopBasket from '../pages/ShopBasket';
 import SignUp from '../pages/SignUp';
+import Detail from '../pages/Detail';
 
 const Router = () => {
   return (
@@ -15,6 +16,7 @@ const Router = () => {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="shop" element={<ShopBasket />} />
+          <Route path="detail/:id" element={<Detail />} />
         </Routes>
       </Layout>
     </BrowserRouter>
