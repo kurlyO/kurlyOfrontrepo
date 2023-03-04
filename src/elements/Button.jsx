@@ -11,6 +11,10 @@ export const StPuppleButton = styled.button`
   color: rgb(255, 255, 255);
   background-color: rgb(95, 0, 128);
   border: none;
+  &:hover {
+    background-color: skyblue;
+    color: blue;
+  }
 `;
 
 export const StWhiteButton = styled.button`
@@ -24,4 +28,8 @@ export const StWhiteButton = styled.button`
   color: rgb(95, 0, 128);
   background-color: rgb(255, 255, 255);
   border: 1px solid purple;
+  &:hover {
+    background-color: skyblue;
+    color: blue;
+  }
 `;

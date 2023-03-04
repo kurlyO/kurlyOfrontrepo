@@ -40,7 +40,6 @@ function Login() {
       if (status == true) {
         alert('드디어 로그인 성공!!!');
         const expires = moment().add('60', 'm').toDate();
-
         const token = response.headers.authorization;
         console.log(token);
         setCookie('token', token, { expires, path: '/', sameSite: 'strict' });

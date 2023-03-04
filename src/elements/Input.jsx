@@ -56,4 +56,13 @@ export const StDupButton = styled.button`
   border-radius: 3px;
   font-weight: 1000;
   color: #4b0e4b;
+  &:hover {
+    background-color: skyblue;
+    color: blue;
+  }
+`;
+
+//span
+export const StSpan = styled.span`
+  color: #ee6a7b;
 `;

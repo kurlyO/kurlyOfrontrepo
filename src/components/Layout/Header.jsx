@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+
 import styled from 'styled-components';
 
 const HeaderStyles = styled.header`
   width: 100%;
-  background: tomato;
-  height: 18vh;
+  height: 13vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,13 +23,15 @@ function Header() {
 
   return (
     <HeaderStyles>
-      <button
-        onClick={() => {
-          navigate('/');
-        }}
-      >
-        홈
-      </button>
+      <div>
+        <img
+          style={{ width: '103px' }}
+          onClick={() => {
+            navigate('/');
+          }}
+          src="https://res.kurly.com/images/marketkurly/logo/logo_x2.png"
+        />
+      </div>
       <StButtonBox>
         <button
           onClick={() => {

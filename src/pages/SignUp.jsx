@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useMutation } from 'react-query';
 import styled from 'styled-components';
-import { StInputBox, StInputTextBox, StInputText, StInput, StDupButton } from '../elements/Input';
+import {
+  StInputBox,
+  StInputTextBox,
+  StInputText,
+  StInput,
+  StDupButton,
+  StSpan,
+} from '../elements/Input';
+import { StInfoUl } from '../elements/Essential';
 import { sitejoin } from '../api/axios';
 import { Navigate } from 'react-router-dom';
 
@@ -13,7 +21,10 @@ function InputComps(props) {
     <div>
       <StInputBox showBorder={props.showBorder}>
         <StInputTextBox>
-          <StInputText>{props.content}</StInputText>
+          <StInputText>
+            {props.content}
+            <StSpan>*</StSpan>
+          </StInputText>
         </StInputTextBox>
         <StInput
           type={props.type}
@@ -31,6 +42,7 @@ function SignUp() {
   const [join, setJoin] = useState({
     account: '',
     password: '',
+    passwordConfirm: '',
     name: '',
     email: '',
     address: '',
@@ -75,7 +87,7 @@ function SignUp() {
 
   const joinButtonHandler = async (e) => {
     e.preventDefault();
-    const { account, password, name, email, address, phone, gender, birth } = join;
+    const { account, password, name, email, address, phone, gender, birth, passwordConfirm } = join;
 
     if (!validatememberId(account)) {
       alert('4~10길이의 소문자, 숫자만 가능하다');
@@ -90,6 +102,9 @@ function SignUp() {
     if (!validateemail(email)) {
       alert('이메일 형식으로 맞게 짜줘');
       return;
+    }
+    if (password !== passwordConfirm) {
+      alert('비번이 달라요');
     }
 
     const obj = {
@@ -116,19 +131,17 @@ function SignUp() {
     }
   };
 
-  //div태그로 큰 틀로 관리
-  //두 번째 div로 header빼고 박스로 관리
-  // 회원가입 div width가 그 줄 차지
-  // 필수입력사항 div만들기
-  // input, text, button감싸는 div하나 만들어서 관리
-  //
-
   return (
     <StContainer>
       <div>
         <StJoinTitle>
           <div>회원가입</div>
         </StJoinTitle>
+        <StEssencial>
+          <div style={{ marginBottom: '15px' }}>
+            <StSpan>*</StSpan> 필수입력사항
+          </div>
+        </StEssencial>
         <form onSubmit={joinButtonHandler}>
           <InputComps
             type={'text'}
@@ -140,22 +153,52 @@ function SignUp() {
             onChange={handleInputChange}
           />
 
+          {join.account.length < 1 ? null : !validatememberId(join.account) ? (
+            <StInfoUl>
+              <li style={{ color: 'red' }}>4~10길이의 소문자, 숫자만 가능하다</li>
+            </StInfoUl>
+          ) : (
+            <StInfoUl>
+              <li style={{ color: 'green' }}>참 잘했어요</li>
+            </StInfoUl>
+          )}
+
           <InputComps
-            type={'text'}
+            type={'password'}
             content={'비밀번호'}
             naming={'password'}
             holder={'비밀번호를 입력해주세요'}
             showBorder={false}
             onChange={handleInputChange}
           />
-
+          {join.password.length < 1 ? null : !validatepassword(join.password) ? (
+            <StInfoUl>
+              <li style={{ color: 'red' }}>
+                영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 15자의 비밀번호여야
+                합니다
+              </li>
+            </StInfoUl>
+          ) : (
+            <StInfoUl>
+              <li style={{ color: 'green' }}>참 잘했어요</li>
+            </StInfoUl>
+          )}
           <InputComps
-            type={'text'}
+            type={'password'}
             content={'비밀번호 확인'}
-            naming={'account'}
+            naming={'passwordConfirm'}
             holder={'비밀번호를 한번 더 입력해주세요'}
             onChange={handleInputChange}
           />
+          {join.passwordConfirm.length < 1 ? null : join.passwordConfirm !== join.password ? (
+            <StInfoUl>
+              <li style={{ color: 'red' }}>비밀번호 같게 쓰도록</li>
+            </StInfoUl>
+          ) : (
+            <StInfoUl>
+              <li style={{ color: 'green' }}>둘 비번 같아요</li>
+            </StInfoUl>
+          )}
 
           <InputComps
             type={'text'}
@@ -164,7 +207,7 @@ function SignUp() {
             holder={'이름을 입력해주세요'}
             onChange={handleInputChange}
           />
-
+          {/* {join.name.length < 1 : null ? () } */}
           <InputComps
             type={'text'}
             content={'휴대폰'}
@@ -172,7 +215,6 @@ function SignUp() {
             holder={'숫자만 입력해주세요'}
             onChange={handleInputChange}
           />
-
           <InputComps
             type={'text'}
             content={'이메일'}
@@ -181,15 +223,17 @@ function SignUp() {
             dupButton={'중복검사'}
             onChange={handleInputChange}
           />
-
+          {join.email.length < 1 ? null : !validateemail(join.email) ? (
+            <StInfoUl>
+              <li style={{ color: 'red' }}>이메일 형식을 입력하세요</li>
+            </StInfoUl>
+          ) : (
+            <StInfoUl>
+              <li style={{ color: 'green' }}>이메일 형식을 입력했네요!</li>
+            </StInfoUl>
+          )}
           <StRadioBox>
-            <InputComps
-              type={'radio'}
-              content={'성별'}
-              naming={'gender'}
-              value="woman"
-              onChange={handleInputChange}
-            />
+            <InputComps type={'radio'} content={'성별*'} naming={'gender'} />
             <input type={'radio'} naming={'gender'} onChange={handleInputChange} />
             <input type={'radio'} naming={'gender'} onChange={handleInputChange} />
           </StRadioBox>
@@ -199,7 +243,6 @@ function SignUp() {
             naming={'birth'}
             onChange={handleInputChange}
           />
-
           <button>버튼</button>
         </form>
       </div>
@@ -225,6 +268,12 @@ const StJoinTitle = styled.div`
   text-align: center;
   letter-spacing: -1px;
   color: #333;
+`;
+
+const StEssencial = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-left: 30px;
 `;
 
 const StRadioBox = styled.div``;
