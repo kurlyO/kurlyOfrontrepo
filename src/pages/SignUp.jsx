@@ -3,6 +3,7 @@ import { useMutation } from 'react-query';
 import styled from 'styled-components';
 import { StSignInputBox, StSignInput, StOneTextBox, StTwoBox } from '../elements/Input';
 import { sitejoin } from '../api/axios';
+import { Navigate } from 'react-router-dom';
 
 function InputComp(props) {
   return (
@@ -96,6 +97,11 @@ function SignUp() {
     console.log(obj);
     try {
       const response = await mutate.mutateAsync(obj);
+      const { status, message } = response.data;
+      if (status === true) {
+        alert('회원가입 완료');
+        Navigate('/');
+      }
       console.log(response);
     } catch (error) {
       console.log('에러입니다');
