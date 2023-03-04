@@ -2,7 +2,8 @@ import { useState, React } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getCookie } from '../utils/cookies';
 import styled from 'styled-components';
-import { useMutation } from 'react-query';
+import { useMutation, useQueries, useQuery } from 'react-query';
+import { getMainList } from '../api/HomeAPI';
 
 
 function ShowItems(props) {
@@ -18,7 +19,10 @@ function ShowItems(props) {
 
 function Home() {
   const navigate = useNavigate();
+  const {isLoading, isError, data} = useQuery("main", getMainList)
 
+
+  console.log(data)
 
   const testlist = {
     "items": [
@@ -32,9 +36,9 @@ function Home() {
 
     <ItemBoxContainer>
       {testlist.items.map((item) => {
-        return (<>
+        return (<> 
           <Link to = {`detail/${item.id}`} style={{color:"black", textDecoration: "none" }}>
-          <ShowItems id={item.id} title = {item.text}/>
+          <ShowItems  id={item.id} title = {item.text}/>
 
           </Link>
         </>)
@@ -81,4 +85,10 @@ background-size: contain;
 background-position: center;
 background-repeat: no-repeat;
 position: relative;
+`
+
+const CategoryContainer = styled.div`
+
+
+
 `
