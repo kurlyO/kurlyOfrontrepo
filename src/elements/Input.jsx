@@ -47,6 +47,11 @@ export const StInput = styled.input`
   color: rgb(51, 51, 51);
   outline: none;
   box-sizing: border-box;
+  ${(props) =>
+    props.flex &&
+    css`
+      flex: 1 1 0%;
+    `}
 `;
 
 export const StDupButton = styled.button`

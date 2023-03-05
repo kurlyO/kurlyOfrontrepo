@@ -15,8 +15,6 @@ import { Navigate } from 'react-router-dom';
 
 //props확인하여 조건부 렌더링
 function InputComps(props) {
-  const [effectiveness, setEffectiveness] = useState(false);
-
   return (
     <div>
       <StInputBox showBorder={props.showBorder}>
@@ -31,13 +29,56 @@ function InputComps(props) {
           name={props.naming}
           placeholder={props.holder}
           onChange={props.onChange}
+          flex={props.flex}
         />
         {props.dupButton && <StDupButton>{props.dupButton}</StDupButton>}
       </StInputBox>
     </div>
   );
 }
-
+//------------------------------------------------------------------------------------------
+function Radio(props) {
+  return (
+    <StRadioContainer>
+      <StGenderText>
+        <StGenderLebel>성별</StGenderLebel>
+      </StGenderText>
+      <StLargeLebelBox>
+        <StSmallLebelBox>
+          <StLebel>
+            <StLebelInput
+              type={props.type}
+              name={props.naming}
+              value="male"
+              onChange={props.onChange}
+            />
+            <StSpan2>남자</StSpan2>
+          </StLebel>
+          <StLebel>
+            <StLebelInput
+              type={props.type}
+              name={props.naming}
+              value="female"
+              onChange={props.onChange}
+            />
+            <StSpan2>여자</StSpan2>
+          </StLebel>
+          <StLebel>
+            <StLebelInput
+              type={props.type}
+              name={props.naming}
+              value="선택안함"
+              onChange={props.onChange}
+            />
+            <StSpan2>선택안함</StSpan2>
+          </StLebel>
+        </StSmallLebelBox>
+      </StLargeLebelBox>
+      <StEmpty></StEmpty>
+    </StRadioContainer>
+  );
+}
+//------------------------------------------------------------------------------------------
 function SignUp() {
   const [join, setJoin] = useState({
     account: '',
@@ -168,7 +209,6 @@ function SignUp() {
             content={'비밀번호'}
             naming={'password'}
             holder={'비밀번호를 입력해주세요'}
-            showBorder={false}
             onChange={handleInputChange}
           />
           {join.password.length < 1 ? null : !validatepassword(join.password) ? (
@@ -207,14 +247,7 @@ function SignUp() {
             holder={'이름을 입력해주세요'}
             onChange={handleInputChange}
           />
-          {/* {join.name.length < 1 : null ? () } */}
-          <InputComps
-            type={'text'}
-            content={'휴대폰'}
-            naming={'phone'}
-            holder={'숫자만 입력해주세요'}
-            onChange={handleInputChange}
-          />
+
           <InputComps
             type={'text'}
             content={'이메일'}
@@ -232,17 +265,24 @@ function SignUp() {
               <li style={{ color: 'green' }}>이메일 형식을 입력했네요!</li>
             </StInfoUl>
           )}
-          <StRadioBox>
-            <InputComps type={'radio'} content={'성별*'} naming={'gender'} />
-            <input type={'radio'} naming={'gender'} onChange={handleInputChange} />
-            <input type={'radio'} naming={'gender'} onChange={handleInputChange} />
-          </StRadioBox>
+
+          <InputComps
+            type={'text'}
+            content={'휴대폰'}
+            naming={'phone'}
+            holder={'숫자만 입력해주세요'}
+            onChange={handleInputChange}
+          />
+
+          <Radio type={'radio'} naming={'gender'} onChange={handleInputChange} />
+
           <InputComps
             type={'date'}
             content={'생년월일'}
             naming={'birth'}
             onChange={handleInputChange}
           />
+
           <button>버튼</button>
         </form>
       </div>
@@ -276,6 +316,67 @@ const StEssencial = styled.div`
   margin-left: 30px;
 `;
 
-const StRadioBox = styled.div``;
+//큰 div하나
+//성별 큰 div하나 글씨 lebel하나
+//radio div박스 하나
+// 그 안에 leble박스 하나
+//그 안에 input박스 type="radio"
+
+const StRadioContainer = styled.div`
+  display: inline-flex;
+  width: 100%;
+  padding: 10px 20px;
+`;
+const StGenderText = styled.div`
+  width: 139px;
+  padding-top: 12px;
+`;
+const StGenderLebel = styled.label`
+  font-weight: 500;
+  color: rgb(51, 51, 51);
+  line-height: 20px;
+`;
+
+const StLargeLebelBox = styled.div`
+  display: flex;
+  flex: 1 1;
+  width: 149px;
+  height: 46px;
+`;
+const StSmallLebelBox = styled.div`
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  flex-direction: row;
+`;
+const StLebel = styled.label`
+  position: relative;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  padding: 12px 0px 9px;
+`;
+const StLebelInput = styled.input`
+  box-sizing: border-box;
+  padding: 0;
+`;
+const StSpan1 = styled.span`
+  min-width: 24px;
+  min-height: 24px;
+  display: inline-block;
+  position: relative;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid rgb(221, 221, 221);
+`;
+const StSpan2 = styled.span`
+  position: relative;
+  font-size: 16px;
+  margin-left: 12px;
+`;
+const StEmpty = styled.div`
+  width: 120px;
+  margin-left: 8px;
+`;
 
 export default SignUp;
