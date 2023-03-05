@@ -13,6 +13,7 @@ import {
 import { StInfoUl } from '../elements/Essential';
 import { sitejoin, idCheck, emailCheck } from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 //props확인하여 조건부 렌더링
 function InputComps(props) {
@@ -188,30 +189,26 @@ function SignUp() {
   };
 
   //중복검사
-  const {
-    isLoading: isIdChecking,
-    data: idCheckResult,
-    error: idCheckError,
-    refetch: refetchIdCheck,
-  } = useQuery(['idCheck', join.account], () => idCheck(join.account), { enabled: false });
+  const {isLoading, isError, data, refetch} = useQuery(['idCheck', join.account], () => idCheck(join.account), { enabled: false });
 
   const checkHandler = async () => {
     if (join.account !== '') {
       console.log(join.account);
-      try {
-        await refetchIdCheck();
 
-        const isDuplicate = idCheckResult?.isDuplicate;
-        console.log(idCheckResult.data);
-        console.log(isDuplicate);
-        if (idCheckResult.success) {
+      let test = await idCheck(join.account)
+      console.log(test)
+      /*try {
+        await refetch();
+
+        console.log(data);
+        if (data) {
           alert('중복');
         } else {
           alert('중복아님');
         }
       } catch (error) {
         alert('중복');
-      }
+      }*/
     } else {
       console.log('야식은 치킨이답');
     }
