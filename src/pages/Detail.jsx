@@ -3,56 +3,78 @@ import styled from 'styled-components';
 import { StInput } from '../elements/Input';
 import { StPuppleButton, StWhiteButton } from '../elements/Button';
 import { useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { getDetail } from '../api/DetailAPI';
+
+function DetailContents(props){
+
+  return(<>
+    <DetailContentsBox>
+    <DetailContentsBoxLeft>{props.Name}</DetailContentsBoxLeft>
+    <DetailContentsBoxRight>
+      <DetailContentsBoxRightMainP>{props.Contents}</DetailContentsBoxRightMainP>
+      <DetailContentsBoxRightSubP>{props.Sub}</DetailContentsBoxRightSubP>
+    </DetailContentsBoxRight>
+  </DetailContentsBox>
+  </>)
+}
 
 function Detail(){
  const pam = useParams()
+ const { isLoading, isError, data, refetch } = useQuery("getMain", () => getDetail(pam.id))
+ 
+ if (isLoading) {
+  return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>
+}
+if (isError) {
+  return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
+}
 
+
+const CheckPackaging = (type, isSub) => {
+
+  console.log(type, isSub)
+  if(isSub == false){
+    switch(type){
+    
+      case("COLD"):
+      return("냉동")
+      default:
+    }
+  }
+  else{
+    switch(type){
+    
+      case("COLD"):
+      return("냉동제품은 받는 시간을 확인하여 상하는 일이 없도록 주의하십시오")
+      default:
+    }
+  }
+}
+
+console.log(data.data)
     return(<>
     <PageContainer>
         <DetailContainer>
-            <LeftImage imageUrl = {"/title.png"}></LeftImage>
+            <LeftImage imageUrl = {data.data.data.image}></LeftImage>
             <RightBox>
-              <TopTitle>항해컬리</TopTitle>
-              <TopGoodsName>골디락스 존</TopGoodsName>
+              <TopTitle>{data.data.data.goodsName}</TopTitle>
+              <TopGoodsName>{data.data.data.goodsName}</TopGoodsName>
               <TopGoodsSubName>항해컬리에서 자랑하는 샘플</TopGoodsSubName>
               <CostBox>
-                <CostNumberSpan>999999</CostNumberSpan>
+                <CostNumberSpan>{data.data.data.price}</CostNumberSpan>
                 <CostWONSpan>원</CostWONSpan>
               </CostBox>
               <DetailContentsContainer>
-                <DetailContentsBox>
-                  <DetailContentsBoxLeft>이게 되네?</DetailContentsBoxLeft>
-                  <DetailContentsBoxRight>
-                    <DetailContentsBoxRightMainP>스파르타 항해</DetailContentsBoxRightMainP>
-                    <DetailContentsBoxRightSubP>항해라고 하니 제가 LA에 있던 시절이 떠오르는 군요........</DetailContentsBoxRightSubP>
-                  </DetailContentsBoxRight>
-                </DetailContentsBox>
+                <DetailContents Name = {"배송"} Contents = {"스파르타 항해"} Sub = {""}/>
+                <DetailContents Name = {"판매자"} Contents = {"스파르타 항해"} Sub = {""}/>
+                <DetailContents Name = {"포장타입"} Contents = {CheckPackaging(data.data.data.packaging, false)} Sub = {CheckPackaging(data.data.data.packaging, true)}/>
 
+                <DetailContents Name = {"판매단위"} Contents = {"스파르타 항해"} Sub = {""}/>
+              <CheckCountAndGetCartBox>
+                <StPuppleButton>장바구니</StPuppleButton>
 
-                <DetailContentsBox>
-                  <DetailContentsBoxLeft>이게 되네?</DetailContentsBoxLeft>
-                  <DetailContentsBoxRight>
-                    <DetailContentsBoxRightMainP>스파르타 항해</DetailContentsBoxRightMainP>
-                    <DetailContentsBoxRightSubP>항해라고 하니 제가 LA에 있던 시절이 떠오르는 군요........</DetailContentsBoxRightSubP>
-                  </DetailContentsBoxRight>
-                </DetailContentsBox>
-                
-                <DetailContentsBox>
-                  <DetailContentsBoxLeft>이게 되네?</DetailContentsBoxLeft>
-                  <DetailContentsBoxRight>
-                    <DetailContentsBoxRightMainP>스파르타 항해</DetailContentsBoxRightMainP>
-                    <DetailContentsBoxRightSubP>항해라고 하니 제가 LA에 있던 시절이 떠오르는 군요........</DetailContentsBoxRightSubP>
-                  </DetailContentsBoxRight>
-                </DetailContentsBox>
-                
-                <DetailContentsBox>
-                  <DetailContentsBoxLeft>이게 되네?</DetailContentsBoxLeft>
-                  <DetailContentsBoxRight>
-                    <DetailContentsBoxRightMainP>스파르타 항해</DetailContentsBoxRightMainP>
-                    <DetailContentsBoxRightSubP>항해라고 하니 제가 LA에 있던 시절이 떠오르는 군요........</DetailContentsBoxRightSubP>
-                  </DetailContentsBoxRight>
-                </DetailContentsBox>
-
+              </CheckCountAndGetCartBox>
               </DetailContentsContainer>
 
             </RightBox>
@@ -190,7 +212,8 @@ const DetailContentsBox = styled.div`
   align-items: flex-start;
   overflow: hidden;
   margin: 0;
-  padding-bottom: 10px;
+  padding-top: 17px;
+  padding-bottom: 18px;
     border-top: 1px solid #f4f4f4;
     font-size: 14px;
     letter-spacing: -0.5px;
@@ -231,4 +254,7 @@ display: block;
     padding-top: 4px;
     line-height: 16px;
     white-space: pre-line;
+`
+const CheckCountAndGetCartBox = styled.div`
+  
 `
