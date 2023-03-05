@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useMutation } from 'react-query';
+import { QueryClient, useMutation } from 'react-query';
 import styled from 'styled-components';
+import { useQuery } from 'react-query';
 import {
   StInputBox,
   StInputTextBox,
@@ -10,8 +11,8 @@ import {
   StSpan,
 } from '../elements/Input';
 import { StInfoUl } from '../elements/Essential';
-import { sitejoin } from '../api/axios';
-import { Navigate } from 'react-router-dom';
+import { sitejoin, idCheck, emailCheck } from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 //props확인하여 조건부 렌더링
 function InputComps(props) {
@@ -31,7 +32,11 @@ function InputComps(props) {
           onChange={props.onChange}
           flex={props.flex}
         />
-        {props.dupButton && <StDupButton>{props.dupButton}</StDupButton>}
+        {props.dupButton && (
+          <StDupButton type="button" onClick={props.onClick}>
+            {props.dupButton}
+          </StDupButton>
+        )}
       </StInputBox>
     </div>
   );
@@ -92,18 +97,34 @@ function SignUp() {
     birth: '',
   });
 
+  //onChange 통합 핸들러
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setJoin({
+      ...join,
+      [name]: value,
+    });
+  };
+
+  const navigate = useNavigate();
+
   const mutate = useMutation(sitejoin, {
-    onError: (error) => {
-      if (error.response.status === 409) {
-        alert('중복된 아이디나 닉네임이 있습니다.');
-      } else {
-        alert('회원가입 실패');
-        console.log(error);
-      }
-      console.log(error);
+    onSuccess: () => {
+      console.log('성공');
     },
+
+    // onError: (error) => {
+    //   if (error.response.status === 409) {
+    //     alert('중복된 아이디나 닉네임이 있습니다.');
+    //   } else {
+    //     alert('회원가입 실패');
+    //     console.log(error);
+    //   }
+    //   console.log(error);
+    // },
   });
 
+  //유효성 조건
   const memberIdRegEx = /^[a-z0-9]{4,10}$/;
   const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/;
   const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -118,14 +139,7 @@ function SignUp() {
     return emailRegEx.test(email);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setJoin({
-      ...join,
-      [name]: value,
-    });
-  };
-
+  //회원가입
   const joinButtonHandler = async (e) => {
     e.preventDefault();
     const { account, password, name, email, address, phone, gender, birth, passwordConfirm } = join;
@@ -162,9 +176,10 @@ function SignUp() {
     try {
       const response = await mutate.mutateAsync(obj);
       const { status, message } = response.data;
+      console.log(response);
       if (status === true) {
         alert('회원가입 완료');
-        Navigate('/');
+        navigate('/');
       }
       console.log(response);
     } catch (error) {
@@ -172,6 +187,36 @@ function SignUp() {
     }
   };
 
+  //중복검사
+  const {
+    isLoading: isIdChecking,
+    data: idCheckResult,
+    error: idCheckError,
+    refetch: refetchIdCheck,
+  } = useQuery(['idCheck', join.account], () => idCheck(join.account), { enabled: false });
+  // useQuery를 사용하여 idCheck API를 호출합니다.
+  // 첫 번째 인자는 캐시 키(key)입니다. 'idCheck'와 사용자 계정(join.account)으로 이루어진 배열로 지정합니다.
+  // 두 번째 인자는 API를 호출하는 함수입니다. join.account 값을 매개변수로 전달하여 idCheck API를 호출합니다.
+  // 세 번째 인자는 옵션입니다. 여기서는 초기에 API를 호출하지 않도록 enabled: false로 설정합니다.
+  // useQuery의 결과는 isLoading, data, error, refetch 등의 속성을 포함하는 객체입니다.
+
+  const checkHandler = async () => {
+    try {
+      await refetchIdCheck();
+      const isDuplicate = idCheckResult?.isDuplicate || false;
+      if (isDuplicate) {
+        alert('중복');
+      } else {
+        alert('중복아님');
+      }
+    } catch (error) {
+      alert('중복');
+    }
+  };
+  // checkHandler 함수는 중복 확인 버튼이 클릭되면 실행됩니다.
+  // refetchIdCheck 함수를 사용하여 idCheck API를 호출합니다.
+  // idCheckResult 객체에서 isDuplicate 속성을 가져와 해당 값이 true이면 '중복' 알림창을, false이면 '중복아님' 알림창을 보여줍니다.
+  // 에러가 발생하면 '중복' 알림창을 보여줍니다.
   return (
     <StContainer>
       <div>
@@ -183,7 +228,7 @@ function SignUp() {
             <StSpan>*</StSpan> 필수입력사항
           </div>
         </StEssencial>
-        <form onSubmit={joinButtonHandler}>
+        <form>
           <InputComps
             type={'text'}
             content={'아이디'}
@@ -192,8 +237,8 @@ function SignUp() {
             dupButton={'중복검사'}
             showBorder={true}
             onChange={handleInputChange}
+            onClick={checkHandler}
           />
-
           {join.account.length < 1 ? null : !validatememberId(join.account) ? (
             <StInfoUl>
               <li style={{ color: 'red' }}>4~10길이의 소문자, 숫자만 가능하다</li>
@@ -223,6 +268,7 @@ function SignUp() {
               <li style={{ color: 'green' }}>참 잘했어요</li>
             </StInfoUl>
           )}
+
           <InputComps
             type={'password'}
             content={'비밀번호 확인'}
@@ -283,7 +329,7 @@ function SignUp() {
             onChange={handleInputChange}
           />
 
-          <button>버튼</button>
+          <button onClick={joinButtonHandler}>버튼</button>
         </form>
       </div>
     </StContainer>
