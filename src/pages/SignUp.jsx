@@ -194,29 +194,37 @@ function SignUp() {
     error: idCheckError,
     refetch: refetchIdCheck,
   } = useQuery(['idCheck', join.account], () => idCheck(join.account), { enabled: false });
-  // useQuery를 사용하여 idCheck API를 호출합니다.
-  // 첫 번째 인자는 캐시 키(key)입니다. 'idCheck'와 사용자 계정(join.account)으로 이루어진 배열로 지정합니다.
-  // 두 번째 인자는 API를 호출하는 함수입니다. join.account 값을 매개변수로 전달하여 idCheck API를 호출합니다.
-  // 세 번째 인자는 옵션입니다. 여기서는 초기에 API를 호출하지 않도록 enabled: false로 설정합니다.
-  // useQuery의 결과는 isLoading, data, error, refetch 등의 속성을 포함하는 객체입니다.
 
   const checkHandler = async () => {
-    try {
-      await refetchIdCheck();
-      const isDuplicate = idCheckResult?.isDuplicate || false;
-      if (isDuplicate) {
+    if (join.account !== '') {
+      console.log(join.account);
+      try {
+        await refetchIdCheck();
+
+        const isDuplicate = idCheckResult?.isDuplicate;
+        console.log(idCheckResult.data);
+        console.log(isDuplicate);
+        if (idCheckResult.success) {
+          alert('중복');
+        } else {
+          alert('중복아님');
+        }
+      } catch (error) {
         alert('중복');
-      } else {
-        alert('중복아님');
       }
-    } catch (error) {
-      alert('중복');
+    } else {
+      console.log('야식은 치킨이답');
     }
   };
-  // checkHandler 함수는 중복 확인 버튼이 클릭되면 실행됩니다.
-  // refetchIdCheck 함수를 사용하여 idCheck API를 호출합니다.
-  // idCheckResult 객체에서 isDuplicate 속성을 가져와 해당 값이 true이면 '중복' 알림창을, false이면 '중복아님' 알림창을 보여줍니다.
-  // 에러가 발생하면 '중복' 알림창을 보여줍니다.
+  // const checkHandler = async () => {
+  //   const { isLoading, isError, data } = useQuery(idCheck);
+  //   try {
+  //     if (join.account == '') {
+  //       alert('중복입니다');
+  //     }
+  //   } catch (error) {}
+  // };
+
   return (
     <StContainer>
       <div>
