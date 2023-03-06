@@ -47,6 +47,11 @@ export const StInput = styled.input`
   color: rgb(51, 51, 51);
   outline: none;
   box-sizing: border-box;
+  ${(props) =>
+    props.flex &&
+    css`
+      flex: 1 1 0%;
+    `}
 `;
 
 export const StDupButton = styled.button`
@@ -56,4 +61,13 @@ export const StDupButton = styled.button`
   border-radius: 3px;
   font-weight: 1000;
   color: #4b0e4b;
+  &:hover {
+    background-color: skyblue;
+    color: blue;
+  }
+`;
+
+//span
+export const StSpan = styled.span`
+  color: #ee6a7b;
 `;
