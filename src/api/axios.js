@@ -21,7 +21,8 @@ export const idCheck = async (payload) => {
 };
 //비밀번호 중복체크
 export const emailCheck = async (payload) => {
-  const response = await axios.get(`http://3.35.46.239/api/member/chechEmail/${payload}`);
+  console.log(payload)
+  const response = await axios.get(`http://3.35.46.239/api/member/signup/emailCheck/${payload}`);
   return response;
 };
 

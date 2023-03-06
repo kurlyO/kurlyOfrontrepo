@@ -190,6 +190,7 @@ function SignUp() {
   //중복검사
   const checkHandler = async (bool) => {
     let check = '';
+    let test = null
     if (bool == true) {
       check = join.account;
     } else {
@@ -199,9 +200,9 @@ function SignUp() {
       console.log(join.account);
       console.log(bool);
       if (bool == true) {
-        let test = await idCheck(join.account);
+       test = await idCheck(check);
       } else {
-        console.log('이메일 중복확인');
+        test = await emailCheck(check);
       }
       if (test.data.success == false) {
         alert('중복');
