@@ -10,6 +10,7 @@ instance.interceptors.request.use(
     // 요청 헤더를 수정합니다.
     const token = getCookie('token');
     config.headers['Authorization'] = token;
+
     return config;
   },
   (error) => {
@@ -18,6 +19,14 @@ instance.interceptors.request.use(
 );
 
 export const cartList = async () => {
-  const response = await instance.get('/api/cart');
+  const response = await instance.get('http://3.35.46.239/api/cart');
+  return response;
+};
+
+export const cartAdd = async (data) => {
+  console.log(data);
+  const response = await instance.post(
+    `http://3.35.46.239/api/goods/amount?goodsId=${data.goodsId}&isPlus=${data.isPlus}&amount_now=${data.count}`
+  );
   return response;
 };
