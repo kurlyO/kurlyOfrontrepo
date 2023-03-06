@@ -189,23 +189,21 @@ function SignUp() {
   };
 
   //중복검사
-  const {isLoading, isError, data, refetch} = useQuery(['idCheck', join.account], () => idCheck(join.account), { enabled: false });
-
   const checkHandler = async () => {
     if (join.account !== '') {
       console.log(join.account);
 
       let test = await idCheck(join.account)
-      console.log(test)
+      console.log(test.data.success)
+      if (test.data.success == false) {
+        alert('중복');
+      } else {
+        alert('중복아님');
+      }
       /*try {
         await refetch();
 
         console.log(data);
-        if (data) {
-          alert('중복');
-        } else {
-          alert('중복아님');
-        }
       } catch (error) {
         alert('중복');
       }*/

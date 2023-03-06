@@ -16,7 +16,7 @@ export const sitejoin = async (payload) => {
 export const idCheck = async (payload) => {
   console.log(payload)
   const response = await axios.get(`http://3.35.46.239/api/member/signup/accountCheck/${payload}`);
-  console.log(response)
+  console.log(response.data)
   return response;
 };
 //비밀번호 중복체크
