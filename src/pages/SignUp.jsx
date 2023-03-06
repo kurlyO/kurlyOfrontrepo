@@ -10,10 +10,9 @@ import {
   StDupButton,
   StSpan,
 } from '../elements/Input';
-import { StInfoUl } from '../elements/Essential';
+import { StInfoUl, StContainer, StCommonTitle } from '../elements/Common';
 import { sitejoin, idCheck, emailCheck } from '../api/axios';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 //props확인하여 조건부 렌더링
 function InputComps(props) {
@@ -113,16 +112,6 @@ function SignUp() {
     onSuccess: () => {
       console.log('성공');
     },
-
-    // onError: (error) => {
-    //   if (error.response.status === 409) {
-    //     alert('중복된 아이디나 닉네임이 있습니다.');
-    //   } else {
-    //     alert('회원가입 실패');
-    //     console.log(error);
-    //   }
-    //   console.log(error);
-    // },
   });
 
   //유효성 조건
@@ -190,7 +179,7 @@ function SignUp() {
   //중복검사
   const checkHandler = async (bool) => {
     let check = '';
-    let test = null
+    let test = null;
     if (bool == true) {
       check = join.account;
     } else {
@@ -200,7 +189,7 @@ function SignUp() {
       console.log(join.account);
       console.log(bool);
       if (bool == true) {
-       test = await idCheck(check);
+        test = await idCheck(check);
       } else {
         test = await emailCheck(check);
       }
@@ -217,9 +206,9 @@ function SignUp() {
   return (
     <StContainer>
       <div>
-        <StJoinTitle>
+        <StCommonTitle>
           <div>회원가입</div>
-        </StJoinTitle>
+        </StCommonTitle>
         <StEssencial>
           <div style={{ marginBottom: '15px' }}>
             <StSpan>*</StSpan> 필수입력사항
@@ -334,37 +323,11 @@ function SignUp() {
   );
 }
 
-const StContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
-  background-color: rgb(255, 255, 255);
-  font-size: 14px;
-  color: #333;
-`;
-const StJoinTitle = styled.div`
-  margin-bottom: 50px;
-  font-size: 28px;
-  line-height: 35px;
-  font-weight: 500;
-  text-align: center;
-  letter-spacing: -1px;
-  color: #333;
-`;
-
 const StEssencial = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-left: 30px;
 `;
-
-//큰 div하나
-//성별 큰 div하나 글씨 lebel하나
-//radio div박스 하나
-// 그 안에 leble박스 하나
-//그 안에 input박스 type="radio"
 
 const StRadioContainer = styled.div`
   display: inline-flex;
