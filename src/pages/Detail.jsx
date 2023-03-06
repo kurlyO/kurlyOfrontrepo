@@ -29,7 +29,7 @@ function Detail(){
 if (isError) {
   return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
 }
-
+console.log(data.data.data)
 
 const CheckPackaging = (type, isSub) => {
 
@@ -60,7 +60,7 @@ console.log(data.data)
             <RightBox>
               <TopTitle>{data.data.data.goodsName}</TopTitle>
               <TopGoodsName>{data.data.data.goodsName}</TopGoodsName>
-              <TopGoodsSubName>항해컬리에서 자랑하는 샘플</TopGoodsSubName>
+              <TopGoodsSubName>{data.data.data.summary}</TopGoodsSubName>
               <CostBox>
                 <CostNumberSpan>{data.data.data.price}</CostNumberSpan>
                 <CostWONSpan>원</CostWONSpan>

@@ -6,13 +6,34 @@ import { useMutation, useQueries, useQuery } from 'react-query';
 import { getMainList } from '../api/HomeAPI';
 
 function ShowItems(props) {
+  const CartAdd = (event) =>{
+    if(getCookie('token') != null){
+      //여기에 서버 POST 할거야
+      event.preventDefault();
+      event.stopPropagation();
+      console.log("아씨오!")
+    }
+    else{
+      //여기다 로컬 저장할거고
+      event.preventDefault();
+      event.stopPropagation();
+      console.log("아바다케다브라")
+    }
+  }
+  
   return (
     <>
+    <Link to = {`detail/${props.goodsId}`} style={{ color: 'black', textDecoration: 'none' }}>
       <ItemBox>
-        <ItemImage imageUrl={'/title.png'} />
+        <ItemImage imageUrl={props.imageUrl}>
+          <ItemCartButton onClick={CartAdd}/>
+
+        </ItemImage>
         <h3>{props.id}</h3>
         <h3>{props.title}</h3>
+        <h3>{props.price}</h3>
       </ItemBox>
+    </Link>
     </>
   );
 }
@@ -28,30 +49,35 @@ function Home() {
   //   }
 
   //   console.log(data);
+  let list = null
 
-  const testlist = {
-    items: [
-      { id: 1, text: '아바다케다브라' },
-      { id: 1, text: '아바다케다브라' },
-      { id: 1, text: '아바다케다브라' },
-      { id: 1, text: '아바다케다브라' },
-      { id: 1, text: '아바다케다브라' },
-    ],
-  };
+  const {isLoading, isError, data, refetch} = useQuery('getList', ()=> getMainList(), {
+    onSuccess: (res) => {
+      console.log("와우!")
+    }
 
+
+  })
+
+  if (isLoading) {
+    return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>
+  }
+  if (isError) {
+    return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
+  }
+  const MainList = async()=>{
+     list = await getMainList()
+  }
+  console.log(data.data.result)
   return (
     <>
       <PageContainer>
         <CategoryTitle>카테고리입니다</CategoryTitle>
         <CategoryContainer></CategoryContainer>
         <ItemBoxContainer>
-          {testlist.items.map((item) => {
+          {data.data.result.map((item) => {
             return (
-              <>
-                <Link to={`detail/${item.id}`} style={{ color: 'black', textDecoration: 'none' }}>
-                  <ShowItems id={item.id} title={item.text} />
-                </Link>
-              </>
+                  <ShowItems key = {item.goodsId} imageUrl = {item.image} id={item.goodsId} title={item.goodsName} price={item.price} goodsId = {item.goodsId}/>
             );
           })}
         </ItemBoxContainer>
@@ -76,9 +102,6 @@ const ItemBox = styled.div`
   flex-direction: column;
   width: 250px;
   height: 540px;
-  border-radius: 5px;
-  border: 5px solid black;
-  background-color: gray;
   transition: transform 0.2s ease-in-out;
 
   &:hover {
@@ -90,11 +113,24 @@ const ItemImage = styled.div`
   width: 100%;
   height: 100%;
   background-image: url(${(props) => props.imageUrl});
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
 `;
+
+const ItemCartButton = styled.button`
+width: 45px;
+height: 45px;
+background-image: url("/cart.svg");
+padding: 10px;
+margin: 5px;
+border: none;
+background-color: transparent;
+`
 
 const PageContainer = styled.div``;
 
