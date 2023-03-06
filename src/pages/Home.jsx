@@ -6,34 +6,32 @@ import { useMutation, useQueries, useQuery } from 'react-query';
 import { getMainList } from '../api/HomeAPI';
 
 function ShowItems(props) {
-  const CartAdd = (event) =>{
-    if(getCookie('token') != null){
+  const CartAdd = (event) => {
+    if (getCookie('token') != null) {
       //여기에 서버 POST 할거야
       event.preventDefault();
       event.stopPropagation();
-      console.log("아씨오!")
-    }
-    else{
+      console.log('아씨오!');
+    } else {
       //여기다 로컬 저장할거고
       event.preventDefault();
       event.stopPropagation();
-      console.log("아바다케다브라")
+      console.log('아바다케다브라');
     }
-  }
-  
+  };
+
   return (
     <>
-    <Link to = {`detail/${props.goodsId}`} style={{ color: 'black', textDecoration: 'none' }}>
-      <ItemBox>
-        <ItemImage imageUrl={props.imageUrl}>
-          <ItemCartButton onClick={CartAdd}/>
-
-        </ItemImage>
-        <h3>{props.id}</h3>
-        <h3>{props.title}</h3>
-        <h3>{props.price}</h3>
-      </ItemBox>
-    </Link>
+      <Link to={`detail/${props.goodsId}`} style={{ color: 'black', textDecoration: 'none' }}>
+        <ItemBox>
+          <ItemImage imageUrl={props.imageUrl}>
+            <ItemCartButton onClick={CartAdd} />
+          </ItemImage>
+          <h3>{props.id}</h3>
+          <h3>{props.title}</h3>
+          <h3>{props.price}</h3>
+        </ItemBox>
+      </Link>
     </>
   );
 }
@@ -47,37 +45,41 @@ function Home() {
   //   if (isError) {
   //     return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>;
   //   }
-
   //   console.log(data);
-  let list = null
+  let list = null;
 
-  const {isLoading, isError, data, refetch} = useQuery('getList', ()=> getMainList(), {
+  const { isLoading, isError, data, refetch } = useQuery('getList', () => getMainList(), {
     onSuccess: (res) => {
-      console.log("와우!")
-    }
-
-
-  })
+      console.log('와우!');
+    },
+  });
 
   if (isLoading) {
-    return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>
+    return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>;
   }
   if (isError) {
-    return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
+    return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>;
   }
-  const MainList = async()=>{
-     list = await getMainList()
-  }
-  console.log(data.data.result)
+  const MainList = async () => {
+    list = await getMainList();
+  };
+  console.log(data.data.result);
   return (
     <>
       <PageContainer>
         <CategoryTitle>카테고리입니다</CategoryTitle>
         <CategoryContainer></CategoryContainer>
         <ItemBoxContainer>
-          {data.data.result.map((item) => {
+          {data.data.data.map((item) => {
             return (
-                  <ShowItems key = {item.goodsId} imageUrl = {item.image} id={item.goodsId} title={item.goodsName} price={item.price} goodsId = {item.goodsId}/>
+              <ShowItems
+                key={item.goodsId}
+                imageUrl={item.image}
+                id={item.goodsId}
+                title={item.goodsName}
+                price={item.price}
+                goodsId={item.goodsId}
+              />
             );
           })}
         </ItemBoxContainer>
@@ -123,14 +125,14 @@ const ItemImage = styled.div`
 `;
 
 const ItemCartButton = styled.button`
-width: 45px;
-height: 45px;
-background-image: url("/cart.svg");
-padding: 10px;
-margin: 5px;
-border: none;
-background-color: transparent;
-`
+  width: 45px;
+  height: 45px;
+  background-image: url('/cart.svg');
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  background-color: transparent;
+`;
 
 const PageContainer = styled.div``;
 
