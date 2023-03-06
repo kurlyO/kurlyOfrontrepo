@@ -179,7 +179,6 @@ function SignUp() {
       const { status, message } = response.data;
       console.log(response);
       if (status === true) {
-        alert('회원가입 완료');
         navigate('/');
       }
       console.log(response);
@@ -189,36 +188,30 @@ function SignUp() {
   };
 
   //중복검사
-  const checkHandler = async () => {
-    if (join.account !== '') {
+  const checkHandler = async (bool) => {
+    let check = '';
+    if (bool == true) {
+      check = join.account;
+    } else {
+      check = join.email;
+    }
+    if (check !== '') {
       console.log(join.account);
-
-      let test = await idCheck(join.account)
-      console.log(test.data.success)
+      console.log(bool);
+      if (bool == true) {
+        let test = await idCheck(join.account);
+      } else {
+        console.log('이메일 중복확인');
+      }
       if (test.data.success == false) {
         alert('중복');
       } else {
         alert('중복아님');
       }
-      /*try {
-        await refetch();
-
-        console.log(data);
-      } catch (error) {
-        alert('중복');
-      }*/
     } else {
       console.log('야식은 치킨이답');
     }
   };
-  // const checkHandler = async () => {
-  //   const { isLoading, isError, data } = useQuery(idCheck);
-  //   try {
-  //     if (join.account == '') {
-  //       alert('중복입니다');
-  //     }
-  //   } catch (error) {}
-  // };
 
   return (
     <StContainer>
@@ -240,7 +233,7 @@ function SignUp() {
             dupButton={'중복검사'}
             showBorder={true}
             onChange={handleInputChange}
-            onClick={checkHandler}
+            onClick={() => checkHandler(true)}
           />
           {join.account.length < 1 ? null : !validatememberId(join.account) ? (
             <StInfoUl>
@@ -304,6 +297,7 @@ function SignUp() {
             holder={'예: margetkurly@kurly.com'}
             dupButton={'중복검사'}
             onChange={handleInputChange}
+            onClick={() => checkHandler(false)}
           />
           {join.email.length < 1 ? null : !validateemail(join.email) ? (
             <StInfoUl>
