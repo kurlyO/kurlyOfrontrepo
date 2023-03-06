@@ -6,81 +6,88 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { getDetail } from '../api/DetailAPI';
 
-function DetailContents(props){
+function DetailContents(props) {
 
-  return(<>
+  return (<>
     <DetailContentsBox>
-    <DetailContentsBoxLeft>{props.Name}</DetailContentsBoxLeft>
-    <DetailContentsBoxRight>
-      <DetailContentsBoxRightMainP>{props.Contents}</DetailContentsBoxRightMainP>
-      <DetailContentsBoxRightSubP>{props.Sub}</DetailContentsBoxRightSubP>
-    </DetailContentsBoxRight>
-  </DetailContentsBox>
+      <DetailContentsBoxLeft>{props.Name}</DetailContentsBoxLeft>
+      <DetailContentsBoxRight>
+        <DetailContentsBoxRightMainP>{props.Contents}</DetailContentsBoxRightMainP>
+        <DetailContentsBoxRightSubP>{props.Sub}</DetailContentsBoxRightSubP>
+      </DetailContentsBoxRight>
+    </DetailContentsBox>
   </>)
 }
 
-function Detail(){
- const pam = useParams()
- const { isLoading, isError, data, refetch } = useQuery("getMain", () => getDetail(pam.id))
- 
- if (isLoading) {
-  return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>
-}
-if (isError) {
-  return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
-}
-console.log(data.data.data)
+function Detail() {
+  const pam = useParams()
+  const { isLoading, isError, data, refetch } = useQuery("getMain", () => getDetail(pam.id))
 
-const CheckPackaging = (type, isSub) => {
+  if (isLoading) {
+    return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>
+  }
+  if (isError) {
+    return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
+  }
+  console.log(data.data.data)
 
-  console.log(type, isSub)
-  if(isSub == false){
-    switch(type){
-    
-      case("COLD"):
-      return("냉동")
-      default:
+  const CheckPackaging = (type, isSub) => {
+
+    console.log(type, isSub)
+    if (isSub == false) {
+      switch (type) {
+
+        case ("COLD"):
+          return ("냉동")
+        default:
+      }
+    }
+    else {
+      switch (type) {
+
+        case ("COLD"):
+          return ("냉동제품은 받는 시간을 확인하여 상하는 일이 없도록 주의하십시오")
+        default:
+      }
     }
   }
-  else{
-    switch(type){
-    
-      case("COLD"):
-      return("냉동제품은 받는 시간을 확인하여 상하는 일이 없도록 주의하십시오")
-      default:
-    }
-  }
-}
 
-console.log(data.data)
-    return(<>
+  console.log(data.data)
+  return (<>
     <PageContainer>
-        <DetailContainer>
-            <LeftImage imageUrl = {data.data.data.image}></LeftImage>
-            <RightBox>
-              <TopTitle>{data.data.data.goodsName}</TopTitle>
-              <TopGoodsName>{data.data.data.goodsName}</TopGoodsName>
-              <TopGoodsSubName>{data.data.data.summary}</TopGoodsSubName>
-              <CostBox>
-                <CostNumberSpan>{data.data.data.price}</CostNumberSpan>
-                <CostWONSpan>원</CostWONSpan>
-              </CostBox>
-              <DetailContentsContainer>
-                <DetailContents Name = {"배송"} Contents = {"스파르타 항해"} Sub = {""}/>
-                <DetailContents Name = {"판매자"} Contents = {"스파르타 항해"} Sub = {""}/>
-                <DetailContents Name = {"포장타입"} Contents = {CheckPackaging(data.data.data.packaging, false)} Sub = {CheckPackaging(data.data.data.packaging, true)}/>
+      <DetailContainer>
+        <LeftImage imageUrl={data.data.data.image}></LeftImage>
+        <RightBox>
+          <TopTitle>{data.data.data.goodsName}</TopTitle>
+          <TopGoodsName>{data.data.data.goodsName}</TopGoodsName>
+          <TopGoodsSubName>{data.data.data.summary}</TopGoodsSubName>
+          <CostBox>
+            <CostNumberSpan>{data.data.data.price}</CostNumberSpan>
+            <CostWONSpan>원</CostWONSpan>
+          </CostBox>
+          <DetailContentsContainer>
+            <DetailContents Name={"배송"} Contents={"스파르타 항해"} Sub={""} />
+            <DetailContents Name={"판매자"} Contents={"스파르타 항해"} Sub={""} />
+            <DetailContents Name={"포장타입"} Contents={CheckPackaging(data.data.data.packaging, false)} Sub={CheckPackaging(data.data.data.packaging, true)} />
 
-                <DetailContents Name = {"판매단위"} Contents = {"스파르타 항해"} Sub = {""}/>
-              <CheckCountAndGetCartBox>
-                <StPuppleButton>장바구니</StPuppleButton>
+            <DetailContents Name={"판매단위"} Contents={"스파르타 항해"} Sub={""} />
+            <DetailContentsBox>
+              <DetailContentsBoxLeft>상품 선택</DetailContentsBoxLeft>
+              <DetailContentsBoxRight>
+                
+              </DetailContentsBoxRight>
+            </DetailContentsBox>
+            <CheckCountBox>
+              <StPuppleButton>장바구니</StPuppleButton>
 
-              </CheckCountAndGetCartBox>
-              </DetailContentsContainer>
+            </CheckCountBox>
+          </DetailContentsContainer>
 
-            </RightBox>
-        </DetailContainer>
+        </RightBox>
+      </DetailContainer>
     </PageContainer>
-    </>) }
+  </>)
+}
 export default Detail;
 
 //div 순서
@@ -255,6 +262,14 @@ display: block;
     line-height: 16px;
     white-space: pre-line;
 `
-const CheckCountAndGetCartBox = styled.div`
-  
+const CheckCountBox = styled.div`
+    display: flex;
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    padding: 11px 10px 11px 15px;
+    font-size: 12px;
+    border-left: 1px solid rgb(244, 244, 244);
+    border-top: 1px solid rgb(244, 244, 244);
+    border-right: 1px solid rgb(244, 244, 244);
 `
