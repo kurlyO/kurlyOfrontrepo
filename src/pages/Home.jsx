@@ -258,40 +258,46 @@ function ShowItems(props) {
 }
 
 function Home() {
-  const getList = useQuery('getList', getMainList)
   const navigate = useNavigate();
   const [pageList, setPageList] = useState([])
+  const [CateUp, setCateUp] = useState(false)
+  const [CurrentCate, setCurrentCate] = useState('')
   const [checkCategoryBool, setCheckCategoryBool] = useState(false)
+  const getList = useQuery(['getList'], getMainList)
+  const getCategory = useQuery(['getCate', CurrentCate], () => getCateList(CurrentCate), {enabled:CateUp})
   let list = null;
   useEffect(() => {
     if(getList.data){
       setPageList(getList.data.data.data)
       console.log("작동")
-      console.log(getList.data.data.data)
+      //console.log(getList.data.data.data)
     }
   }, [getList.data])  
-  console.log(getList)
-  console.log(pageList)
+  //console.log(getList)
+  //console.log(pageList)
+  
+  useEffect(() => {
+    if(getCategory.data){
+      //console.log(getCategory.data.data.data)
+      setPageList(getCategory.data.data.data)
+      console.log("asdasd")
+      //console.log(getList.data.data.data)
+    }
+  }, [getCategory.data])  
 
   const CategoryHandler = (event) =>{
-    //const getCategory = useQuery('getCate', getCateList)
+    //console.log(event)
+    setCurrentCate(event)
+    setCateUp(true)
+    //getCateList(event)
+    //console.log('aaaa')
 
-
+    //네트워크 펼쳐서 리패치가 뭘 받아오는지 체크하는거 잊지말고
+    getCategory.refetch(event)
+    //console.log(getCategory)
+    //이 밑에선 반영이 안돼!
+    //setPageList(getCategory.data)
   }
-  /*const { isLoading, isError, data, refetch } = useQuery('getList', () => getMainList(), {
-    onSuccess: (res) => {
-      console.log('와우!');
-    },
-  });
-
-  if (isLoading) {
-    return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>;
-  }
-  if (isError) {
-    return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>;
-  }*/
-  //console.log(getList.data.data.data)
-
   const MainList = async () => {
     list = await getMainList();
   };
@@ -308,19 +314,19 @@ function Home() {
       <PageContainer>
         <CategoryTitle>카테고리입니다</CategoryTitle>
         <CategoryContainer>
-          <CategoryButton>
+          <CategoryButton onClick={() => CategoryHandler('채소')}>
+            <CategoryButtonText>채소</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton onClick={() => CategoryHandler('과일')}>
             <CategoryButtonText>sdsdsd</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton>
+          <CategoryButton onClick={() => CategoryHandler('채소')}>
             <CategoryButtonText>sdsdsd</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton>
-            <CategoryButtonText>sdsdsd</CategoryButtonText>
-          </CategoryButton>
-
-          <CategoryButton>
+          <CategoryButton onClick={() => console.log(getCategory)}>
             <CategoryButtonText>sdsdsd</CategoryButtonText>
           </CategoryButton>
 
