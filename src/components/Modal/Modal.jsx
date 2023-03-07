@@ -46,6 +46,8 @@ function CartModal(props) {
               <ModalGoodsNameSpan>{props.goodsName}</ModalGoodsNameSpan>
               <ModalCostBoxBottom>
                 <ModalCostBottom>{props.price} 원</ModalCostBottom>
+                {/*----------------------------------------------------------------------------------*/}
+
                 <ModalCountBox>
                   <ModalCountButton
                     imageUrl={'/minus.svg'}
@@ -57,6 +59,9 @@ function CartModal(props) {
                     onClick={() => CountHandler(true)}
                   ></ModalCountButton>
                 </ModalCountBox>
+
+                {/*----------------------------------------------------------------------------------*/}
+
               </ModalCostBoxBottom>
               <ModalCostBoxBottom style={{ paddingTop: '80px' }}>
                 <ModalCostBottom>합계</ModalCostBottom>
