@@ -22,7 +22,6 @@ function Goods({ item }) {
     }
   };
   console.log(item);
-
   //수량 수정(put)-----------------------------------------------------------
   const [num, setNum] = useState(item.amount);
 
