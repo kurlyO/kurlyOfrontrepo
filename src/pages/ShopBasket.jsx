@@ -3,107 +3,46 @@ import { QueryClient, useQuery } from 'react-query';
 import styled from 'styled-components';
 import { useState } from 'react';
 import { StContainer, StCommonTitle } from '../elements/Common';
-import { cartList } from '../api/CartAPI';
-//----------------------------------------------------------------
-const GoodsBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 270px;
-  height: 24px;
-  padding: 0;
-`;
-const GoodsBoxText = styled.div`
-  width: 100px;
-  font-size: 16px;
-  font-weight: 1000;
-  line-height: 24px;
-  white-space: nowrap;
-`;
-const GoodsBoxText2 = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 24px;
-  text-align: right;
-`;
+import { cartList, cartDel } from '../api/CartAPI';
+import { useMutation } from 'react-query';
 
-function TotalPays(props) {
-  const { isLoading, isError, data } = useQuery('cart', cartList);
-  console.log(data);
-  const [goodsprice, setGoodsprice] = useState(data.data.price);
-  const listprice = data.data.cold[3].price;
-  console.log(listprice);
-  return (
-    <GoodsBox>
-      <GoodsBoxText>{props.content}</GoodsBoxText>
-      <GoodsBoxText2>{props.price}</GoodsBoxText2>
-    </GoodsBox>
-  );
-}
-//----------------------------------------------------------------------------------
-
-const VariousGoods = styled.h4`
-  display: flex;
-  justify-content: space-between;
-  height: 60px;
-  padding: 15px 5px 15px 0px;
-  border-top: 1px solid rgb(51, 51, 51);
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 26px;
-`;
-
-const Span1 = styled.span`
-  background-image: url(${(props) => props.url});
-`;
-
-const ListBox = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin-right: 20px;
-  padding: 15px 5px 15px 0px;
-  width: 742px;
-  height: 100px;
-`;
-
-const ImgBox = styled.img`
-  width: 68px;
-  height: 78px;
-`;
-
-function CartSeparate(props) {
-  const [num, setNum] = useState(0);
-
-  const { isLoading, isError, data } = useQuery('cart', cartList);
-
-  const buttonHandler = (type) => {
+function Goods({ item }) {
+  const counter = item.amount;
+  console.log(counter);
+  const [num, setNum] = useState(counter);
+  const numHandler = (type) => {
+    counter = num;
     type === 'plus' ? setNum(num + 1) : setNum(num - 1);
   };
 
+  //삭제
+  const deleteMutate = useMutation(cartDel, {
+    onSuccess: (data) => {
+      console.log('해당 제품이 삭제 되었씀미다');
+    },
+  });
+
+  const delHandler = (id) => {
+    try {
+      const response = deleteMutate.mutateAsync(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log(item);
+
   return (
-    <EntireMidBoxs>
-      <VariousGoods>
-        <div>
-          <Span1>{props.url} </Span1>
-          <Span1>{props.content}</Span1>
-        </div>
-      </VariousGoods>
-      {data.data.cold.map((item) => {
-        return (
-          <ListBox key={item.id}>
-            <span>
-              <ImgBox src={item.image} />
-            </span>
-            <span>{item.goodsName}</span>
-            <div style={{ display: 'flex', width: '30px', height: '30px' }}>
-              <button onClick={() => buttonHandler('minus')}>-</button>
-              <div>{num}</div>
-              <button onClick={() => buttonHandler('plus')}>+</button>
-            </div>
-            <span>{item.price}</span>
-          </ListBox>
-        );
-      })}
-    </EntireMidBoxs>
+    <ListBox key={item.id}>
+      <ImgBox src={item.image} />
+      <span>{item.goodsName}</span>
+      <div style={{ width: '10px', height: '10px' }}>
+        <button onClick={() => numHandler('minus')}>-</button>
+        <div>{counter}</div>
+        <button onClick={() => numHandler('plus')}>+</button>
+      </div>
+      <span>{item.price * item.amount}</span>
+      <button onClick={() => delHandler(item.cartId)}>삭제</button>
+    </ListBox>
   );
 }
 
@@ -117,13 +56,17 @@ function ShopBasket() {
   if (!data) {
     return <h1>서버에서 찜 목록을 가져오지 못했어요!</h1>;
   }
-  if (data == undefined || null) {
-    <Span1>장바구니를 채워주세요</Span1>;
+  if (!data.data || data.data.length === 0) {
+    return <div>장바구니 채워줘</div>;
   }
-  if (data) {
-    console.log('찜목록 불러오기 성공');
-  }
-  console.log(data);
+  console.log('찜목록 불러오기 성공', data);
+
+  const cartData = data.data;
+  //   const price1 = cartData.cold[1].price;
+  //   const price2 = cartData.frozen.price;
+  //   const price3 = cartData.room_temperature.price;
+  //   const totalPrice = price1 + price2 + price3;
+  //   console.log({ price1, price2, price3 });
 
   return (
     <StContainer>
@@ -143,17 +86,55 @@ function ShopBasket() {
             </EntireInCon1>
           </EntireInT>
         </EntireT>
-        <EntireMidBox>
-          {data.data === null ? <CartSeparate content="장바구니를 채워주세요!" /> : null}
-          {data.data.cold ? <CartSeparate content="냉장식품" /> : null}
-          {data.data.frozen ? <CartSeparate content="냉동식품" /> : null}
-          {data.data.room_temperature ? <CartSeparate content="상온" /> : null}
-        </EntireMidBox>
+        <EntireMidBoxs>
+          {cartData.cold ? <div>냉장식품</div> : null}
+          {cartData.cold.map((item) => {
+            return (
+              <VariousGoods>
+                {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
+              </VariousGoods>
+            );
+          })}
+          {cartData.frozen ? <div>냉동식품</div> : null}
+          {cartData.frozen.map((item) => {
+            return (
+              <VariousGoods>
+                {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
+              </VariousGoods>
+            );
+          })}
+          {cartData.room_temperature ? <div>상온식품</div> : null}
+          {cartData.room_temperature.map((item) => {
+            return (
+              <VariousGoods>
+                {cartData.room_temperature && cartData.room_temperature.length > 0 ? (
+                  <Goods item={item} />
+                ) : null}
+              </VariousGoods>
+            );
+          })}
+
+          {!data && (
+            <React.Fragment>
+              <div content="장바구니 비어있다" />
+            </React.Fragment>
+          )}
+        </EntireMidBoxs>
+        <EntireMidBox></EntireMidBox>
         <SideBox>
           <TotalPay>
-            <TotalPays content="상품금액" price="70,800원" />
-            <TotalPays content="배송비" price="0원" />
-            <TotalPays content="결제예정금액" price="70,800원" />
+            <GoodsBox>
+              <GoodsBoxText>상품금액</GoodsBoxText>
+              <GoodsBoxText2>1원</GoodsBoxText2>
+            </GoodsBox>
+            <GoodsBox>
+              <GoodsBoxText>배송비</GoodsBoxText>
+              <GoodsBoxText2>0원</GoodsBoxText2>
+            </GoodsBox>
+            <GoodsBox>
+              <GoodsBoxText>결정예정금액</GoodsBoxText>
+              <GoodsBoxText2>2원</GoodsBoxText2>
+            </GoodsBox>
           </TotalPay>
         </SideBox>
       </ShopBox>
@@ -208,13 +189,15 @@ const EntireInInput = styled.input`
 const EntireMidBox = styled.div`
   width: 700px;
   flex-direction: column;
-  position: absolute;
+  /* position: absolute; */
   margin-top: 59px;
 `;
 
 const EntireMidBoxs = styled.div`
   width: 690px;
   min-height: 100px;
+  border: 1px solid yellow;
+  gap: 20px;
 `;
 //#eee4e48e;
 const SideBox = styled.div`
@@ -243,6 +226,52 @@ const TotalPay = styled.div`
   padding: 19px 18px 18px 20px;
   border: 1px solid #f2f2f2;
   background-color: #fafafa;
+`;
+//상품금액 결정금액
+const GoodsBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 270px;
+  height: 24px;
+  padding: 0;
+`;
+const GoodsBoxText = styled.div`
+  width: 100px;
+  font-size: 16px;
+  font-weight: 1000;
+  line-height: 24px;
+  white-space: nowrap;
+`;
+const GoodsBoxText2 = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: right;
+`;
+//식품 구별판
+const VariousGoods = styled.h4`
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  padding: 15px 5px 15px 0px;
+  border-top: 1px solid rgb(51, 51, 51);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 26px;
+`;
+
+const ListBox = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-right: 20px;
+  padding: 15px 5px 15px 0px;
+  width: 742px;
+  height: 100px;
+`;
+
+const ImgBox = styled.img`
+  width: 68px;
+  height: 78px;
 `;
 
 export default ShopBasket;

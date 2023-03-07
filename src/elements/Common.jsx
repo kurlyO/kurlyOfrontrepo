@@ -15,7 +15,7 @@ export const StInfoUl = styled.ul`
 export const StContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: ${(props) => props.justifyContent};
   align-items: center;
   margin-top: 30px;
   background-color: rgb(255, 255, 255);
@@ -24,6 +24,7 @@ export const StContainer = styled.div`
 `;
 export const StCommonTitle = styled.div`
   margin-top: ${(props) => props.top};
+  padding-bottom: 0;
   margin-bottom: 50px;
   font-size: 28px;
   line-height: 35px;

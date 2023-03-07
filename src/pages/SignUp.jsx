@@ -204,7 +204,7 @@ function SignUp() {
   };
 
   return (
-    <StContainer>
+    <StContainer justifyContent="center">
       <div>
         <StCommonTitle>
           <div>회원가입</div>

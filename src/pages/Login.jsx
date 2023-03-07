@@ -51,7 +51,7 @@ function Login() {
   };
 
   return (
-    <StContainer>
+    <StContainer justifyContent="center">
       <StForm>
         <div>로그인페이지</div>
         <StLoginInput value={account} onChange={IdOnchangeHandler} />

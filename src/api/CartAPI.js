@@ -30,3 +30,8 @@ export const cartAdd = async (data) => {
   );
   return response;
 };
+
+export const cartDel = async (cartId) => {
+  const response = await instance.delete(`http://3.35.46.239/api/cart/${cartId}`);
+  return response;
+};
