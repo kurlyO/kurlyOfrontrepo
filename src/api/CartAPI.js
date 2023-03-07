@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getCookie } from '../utils/cookies';
 
 const instance = axios.create({
-  baseURL: 'http://211.215.63.173:8080',
+  baseURL: 'https://spar-bk.shop',
 });
 
 instance.interceptors.request.use(
@@ -19,28 +19,28 @@ instance.interceptors.request.use(
 );
 
 export const cartList = async () => {
-  const response = await instance.get('http://211.215.63.173:8080/api/cart');
+  const response = await instance.get('https://spar-bk.shop/api/cart');
   return response;
 };
 
 export const cartAdd = async (data) => {
   console.log(data);
-  console.log(`http://211.215.63.173:8080/api/cart/${data.goodsId}?amount=${data.amount}`);
+  console.log(`https://spar-bk.shop/api/cart/${data.goodsId}?amount=${data.amount}`);
   const response = await instance.post(
-    //`http://211.215.63.173:8080/api/goods/amount?goodsId=${data.goodsId}&isPlus=${data.isPlus}&amount_now=${data.count}`
-    `http://211.215.63.173:8080/api/cart/${data.goodsId}?amount=${data.amount}`,
+    //`https://spar-bk.shop/api/goods/amount?goodsId=${data.goodsId}&isPlus=${data.isPlus}&amount_now=${data.count}`
+    `https://spar-bk.shop/api/cart/${data.goodsId}?amount=${data.amount}`,
     data
   );
   return response;
 };
 
 export const cartDel = async (cartId) => {
-  const response = await instance.delete(`http://211.215.63.173:8080/api/cart/${cartId}`);
+  const response = await instance.delete(`https://spar-bk.shop/api/cart/${cartId}`);
   return response;
 };
 
 export const cartPut = async ({ cartId, isPlus }) => {
-  const response = await instance.put(`http://211.215.63.173:8080/api/cart/amount/${cartId}`, {
+  const response = await instance.put(`https://spar-bk.shop/api/cart/amount/${cartId}`, {
     isPlus,
   });
   return response;

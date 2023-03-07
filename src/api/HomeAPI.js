@@ -4,7 +4,7 @@ import axios from "axios";
 
 const getMainList = async ()=>{
     try{
-        const res = await axios.get("http://211.215.63.173:8080/api/goods")
+        const res = await axios.get("https://spar-bk.shop/api/goods")
         console.log(res)
         return res;
     }
@@ -16,7 +16,7 @@ const getMainList = async ()=>{
 const getCateList = async (payload) => {
     try {
         console.log(payload);
-      const res = await axios.get(`http://211.215.63.173:8080/api/goods/categories/${payload}`);
+      const res = await axios.get(`https://spar-bk.shop/api/goods/categories/${payload}`);
       console.log(res);
       return res;
     } catch (error) {

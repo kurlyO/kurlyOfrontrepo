@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 const getDetail = async (payload)=>{
-    const res = await axios.get(`http://3.35.46.239/api/goods/${payload}`)
+    const res = await axios.get(`https://spar-bk.shop/api/goods/${payload}`)
     return res;
 }
 
