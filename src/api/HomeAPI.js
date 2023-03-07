@@ -4,7 +4,7 @@ import axios from "axios";
 
 const getMainList = async ()=>{
     try{
-        const res = await axios.get("http://3.35.46.239/api/categories")
+        const res = await axios.get("http://3.35.46.239/api/goods")
         console.log(res)
         return res;
     }
@@ -13,16 +13,15 @@ const getMainList = async ()=>{
     }
 
 }
-const getCateList = async (payload)=>{
-    try{
-        const res = await axios.get(`http://3.35.46.239/api/categories/${payload}`)
-        console.log(res)
-        return res;
+const getCateList = async (payload) => {
+    try {
+        console.log(payload);
+      const res = await axios.get(`http://3.35.46.239/api/goods/categories/${payload}`);
+      console.log(res);
+      return res;
+    } catch (error) {
+      console.log("ddddddddddd", error);
     }
-    catch(error){
-        console.log("ddddddddddd",error)
-    }
+  };
 
-}
-
-export {getMainList};
+export {getMainList, getCateList};
