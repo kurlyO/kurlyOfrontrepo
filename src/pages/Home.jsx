@@ -1,14 +1,15 @@
-import { useState, React } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import {  useEffect, useState, React } from 'react';
+import {useNavigate, Link } from 'react-router-dom';
 import { getCookie } from '../utils/cookies';
 import styled from 'styled-components';
 import { useMutation, useQueries, useQuery } from 'react-query';
-import { getMainList } from '../api/HomeAPI';
+import { getCateList, getMainList } from '../api/HomeAPI';
 import { cartAdd } from '../api/CartAPI';
 
 const CartModal = (props) => {
   const [CartCount, setCartCount] = useState(1);
   const [Total, setTotal] = useState(CartCount * props.price);
+  const mutate = useMutation(cartAdd)
 
   const ModalClose = (event) => {
     if (event.target == event.currentTarget) {
@@ -17,14 +18,25 @@ const CartModal = (props) => {
   };
 
   const CountHandler = (event) => {
-    if (event == true && props.count) setCartCount(CartCount + 1);
-    else if (CartCount > 1) setCartCount(CartCount - 1);
+    if (event == true && props.count > CartCount) setCartCount(CartCount + 1);
+    else if (event == false && CartCount > 1) setCartCount(CartCount - 1);
   };
 
   const AddToCart = async (event) => {
     console.log('더한다!');
+
+    const Payload = {
+      goodsId : props.goodsId,
+      amount : CartCount,
+    }
+
     try {
-    } catch {}
+      const res = await mutate.mutateAsync(Payload)
+      console.log(res)
+    } catch(error) {
+      window.alert(`재고 수량 초과!`)
+
+    }
     props.setIsOpen(false);
   };
 
@@ -238,6 +250,7 @@ function ShowItems(props) {
           setIsOpen={setIsOpen}
           price={props.price}
           goodsName={props.title}
+          goodsId={props.goodsId}
         />
       ) : null}
     </>
@@ -245,18 +258,27 @@ function ShowItems(props) {
 }
 
 function Home() {
+  const getList = useQuery('getList', getMainList)
   const navigate = useNavigate();
-  //   const { isLoading, isError, data } = useQuery('main', getMainList);
-  //   if (isLoading) {
-  //     return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>;
-  //   }
-  //   if (isError) {
-  //     return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>;
-  //   }
-  //   console.log(data);
+  const [pageList, setPageList] = useState([])
+  const [checkCategoryBool, setCheckCategoryBool] = useState(false)
   let list = null;
+  useEffect(() => {
+    if(getList.data){
+      setPageList(getList.data.data.data)
+      console.log("작동")
+      console.log(getList.data.data.data)
+    }
+  }, [getList.data])  
+  console.log(getList)
+  console.log(pageList)
 
-  const { isLoading, isError, data, refetch } = useQuery('getList', () => getMainList(), {
+  const CategoryHandler = (event) =>{
+    //const getCategory = useQuery('getCate', getCateList)
+
+
+  }
+  /*const { isLoading, isError, data, refetch } = useQuery('getList', () => getMainList(), {
     onSuccess: (res) => {
       console.log('와우!');
     },
@@ -267,20 +289,64 @@ function Home() {
   }
   if (isError) {
     return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>;
-  }
+  }*/
+  //console.log(getList.data.data.data)
 
   const MainList = async () => {
     list = await getMainList();
   };
-  console.log(data.data);
+  //console.log(pageList) 
 
+  if (getList.isLoading) { 
+    return <div>로딩중.........로딩중.........딩중.........로딩중.........</div>;
+  }
+  else if (getList.isError) {
+    return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>;
+  }
   return (
     <>
       <PageContainer>
         <CategoryTitle>카테고리입니다</CategoryTitle>
-        <CategoryContainer></CategoryContainer>
-        <ItemBoxContainer>
-          {data.data.data.map((item) => {
+        <CategoryContainer>
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton>
+            <CategoryButtonText>sdsdsd</CategoryButtonText>
+          </CategoryButton>
+
+        </CategoryContainer>
+        {/**/}<ItemBoxContainer>
+          {pageList?.map((item) => {
             return (
               <ShowItems
                 key={item.goodsId}
@@ -302,11 +368,13 @@ function Home() {
 export default Home;
 
 const ItemBoxContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  width: 80%;
-  align-items: center;
-  gap: 10px;
+  
+    display: grid;
+align-items: center;
+justify-content: center;
+    grid-template-columns: repeat(auto-fill, 249px);
+    gap: 31px 18px;
+    width: 1300px;
 `;
 
 const ItemBox = styled.div`
@@ -344,7 +412,15 @@ const ItemCartButton = styled.button`
   background-color: transparent;
 `;
 
-const PageContainer = styled.div``;
+const PageContainer = styled.div`
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 10px;
+flex-direction: column;
+text-align: center;
+gap: 20px;
+`;
 
 const CategoryContainer = styled.div`
   display: grid;
@@ -356,6 +432,18 @@ const CategoryContainer = styled.div`
   border: 1px solid rgb(226, 226, 226);
   line-height: 20px;
 `;
+
+const CategoryButton = styled.div`
+  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`
+const CategoryText = styled.a`
+  background-color: transparent;
+    text-decoration: none;
+    color: inherit;
+`
+
 const CategoryTitle = styled.h3`
   margin-top: 50px;
   font-weight: 500;
@@ -365,8 +453,6 @@ const CategoryTitle = styled.h3`
   letter-spacing: -1px;
   text-align: center;
 `;
-const CategoryButton = styled.button``;
-
 const CategoryButtonText = styled.a`
   -webkit-text-size-adjust: 100%;
   font-family: 'Noto Sans', 'malgun gothic', AppleGothic, dotum, sans-serif;

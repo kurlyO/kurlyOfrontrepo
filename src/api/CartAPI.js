@@ -25,9 +25,11 @@ export const cartList = async () => {
 
 export const cartAdd = async (data) => {
   console.log(data);
+  console.log(`http://3.35.46.239/api/cart/${data.goodsId}?amount=${data.amount}`)
   const response = await instance.post(
-    `http://3.35.46.239/api/goods/amount?goodsId=${data.goodsId}&isPlus=${data.isPlus}&amount_now=${data.count}`
-  );
+    //`http://3.35.46.239/api/goods/amount?goodsId=${data.goodsId}&isPlus=${data.isPlus}&amount_now=${data.count}`
+    `http://3.35.46.239/api/cart/${data.goodsId}?amount=${data.amount}`, data
+    );
   return response;
 };
 
