@@ -25,11 +25,12 @@ export const cartList = async () => {
 
 export const cartAdd = async (data) => {
   console.log(data);
-  console.log(`http://3.35.46.239/api/cart/${data.goodsId}?amount=${data.amount}`)
+  console.log(`http://3.35.46.239/api/cart/${data.goodsId}?amount=${data.amount}`);
   const response = await instance.post(
     //`http://3.35.46.239/api/goods/amount?goodsId=${data.goodsId}&isPlus=${data.isPlus}&amount_now=${data.count}`
-    `http://3.35.46.239/api/cart/${data.goodsId}?amount=${data.amount}`, data
-    );
+    `http://3.35.46.239/api/cart/${data.goodsId}?amount=${data.amount}`,
+    data
+  );
   return response;
 };
 
@@ -37,3 +38,9 @@ export const cartDel = async (cartId) => {
   const response = await instance.delete(`http://3.35.46.239/api/cart/${cartId}`);
   return response;
 };
+
+export const cartPut = async ({ cartId, isPlus }) => {
+  const response = await instance.put(`http://3.35.46.239/api/cart/amount/${cartId}`, { isPlus });
+  return response;
+};
+//몸통은 객체에 담아서 보내기
