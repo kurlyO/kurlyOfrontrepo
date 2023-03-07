@@ -3,19 +3,11 @@ import { QueryClient, useQuery } from 'react-query';
 import styled from 'styled-components';
 import { useState } from 'react';
 import { StContainer, StCommonTitle } from '../elements/Common';
-import { cartList, cartDel } from '../api/CartAPI';
+import { cartList, cartDel, cartPut } from '../api/CartAPI';
 import { useMutation } from 'react-query';
 
 function Goods({ item }) {
-  const counter = item.amount;
-  console.log(counter);
-  const [num, setNum] = useState(counter);
-  const numHandler = (type) => {
-    counter = num;
-    type === 'plus' ? setNum(num + 1) : setNum(num - 1);
-  };
-
-  //삭제
+  //삭제------------------------------------------------------------------
   const deleteMutate = useMutation(cartDel, {
     onSuccess: (data) => {
       console.log('해당 제품이 삭제 되었씀미다');
@@ -30,17 +22,44 @@ function Goods({ item }) {
     }
   };
   console.log(item);
+  //수량 수정(put)-----------------------------------------------------------
+  const [num, setNum] = useState(item.amount);
 
+  const putMutate = useMutation(cartPut, {
+    onSuccess: (data) => {
+      console.log('서버의 수량이 수정되었씁니다');
+    },
+  });
+  const putHandler = (type, cartId) => {
+    let isPlus = false;
+    if (type === 'plus') {
+      isPlus = true;
+      setNum(num + 1);
+    } else {
+      isPlus = false;
+      setNum(num - 1);
+    }
+    try {
+      const response = putMutate.mutateAsync({ cartId, isPlus });
+      //payload잘되는지 테스트
+      //   console.log({ cartId, isPlus });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const checkPrice = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
   return (
     <ListBox key={item.id}>
       <ImgBox src={item.image} />
       <span>{item.goodsName}</span>
       <div style={{ width: '10px', height: '10px' }}>
-        <button onClick={() => numHandler('minus')}>-</button>
-        <div>{counter}</div>
-        <button onClick={() => numHandler('plus')}>+</button>
+        <button onClick={() => putHandler('minus', item.cartId)}>-</button>
+        <div>{num}</div>
+        <button onClick={() => putHandler('plus', item.cartId)}>+</button>
       </div>
-      <span>{item.price * item.amount}</span>
+      <span>{checkPrice(item.price * num)}</span>
       <button onClick={() => delHandler(item.cartId)}>삭제</button>
     </ListBox>
   );
@@ -67,7 +86,9 @@ function ShopBasket() {
   //   const price3 = cartData.room_temperature.price;
   //   const totalPrice = price1 + price2 + price3;
   //   console.log({ price1, price2, price3 });
-
+  {
+    /* 앞에 string값 뒤에는 id,index값이어도 되고 */
+  }
   return (
     <StContainer>
       <StCommonTitle top="20px">
@@ -90,7 +111,7 @@ function ShopBasket() {
           {cartData.cold ? <div>냉장식품</div> : null}
           {cartData.cold.map((item) => {
             return (
-              <VariousGoods>
+              <VariousGoods key={`item-${item.id}`}>
                 {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
               </VariousGoods>
             );
@@ -98,7 +119,7 @@ function ShopBasket() {
           {cartData.frozen ? <div>냉동식품</div> : null}
           {cartData.frozen.map((item) => {
             return (
-              <VariousGoods>
+              <VariousGoods key={`item-${item.id}`}>
                 {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
               </VariousGoods>
             );
@@ -106,14 +127,13 @@ function ShopBasket() {
           {cartData.room_temperature ? <div>상온식품</div> : null}
           {cartData.room_temperature.map((item) => {
             return (
-              <VariousGoods>
+              <VariousGoods key={`item-${item.id}`}>
                 {cartData.room_temperature && cartData.room_temperature.length > 0 ? (
                   <Goods item={item} />
                 ) : null}
               </VariousGoods>
             );
           })}
-
           {!data && (
             <React.Fragment>
               <div content="장바구니 비어있다" />
@@ -125,7 +145,7 @@ function ShopBasket() {
           <TotalPay>
             <GoodsBox>
               <GoodsBoxText>상품금액</GoodsBoxText>
-              <GoodsBoxText2>1원</GoodsBoxText2>
+              <GoodsBoxText2>{cartData.cold.price}</GoodsBoxText2>
             </GoodsBox>
             <GoodsBox>
               <GoodsBoxText>배송비</GoodsBoxText>
