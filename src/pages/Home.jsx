@@ -44,7 +44,6 @@ function ShowItems(props) {
           <ItemImage imageUrl={props.imageUrl}>
             <ItemCartButton onClick={CartAdd} />
           </ItemImage>
-          <h3>{props.id}</h3>
           <h3>{props.title}</h3>
           <h3>{props.price}</h3>
         </ItemBox>
