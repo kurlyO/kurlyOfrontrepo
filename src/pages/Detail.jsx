@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { StInput } from '../elements/Input';
 import { StPuppleButton, StWhiteButton } from '../elements/Button';
-import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useNavigate, useNavigation, useParams } from 'react-router-dom';
+import { useMutation, useQuery } from 'react-query';
 import { getDetail } from '../api/DetailAPI';
+import { ModalCount, ModalCountBox, ModalCountButton } from '../components/Modal/ModalStyle';
+import { cartAdd } from '../api/CartAPI';
 
 function DetailContents(props) {
 
@@ -20,6 +22,9 @@ function DetailContents(props) {
 }
 
 function Detail() {
+  const navi = useNavigate()
+  const mutate = useMutation(cartAdd)
+    const [CartCount, setCartCount] = useState(1);
   const pam = useParams()
   const { isLoading, isError, data, refetch } = useQuery("getMain", () => getDetail(pam.id))
 
@@ -29,11 +34,16 @@ function Detail() {
   if (isError) {
     return <div>에러!!!!!!!!에러!!!!!!!!에러!!!!!!!!</div>
   }
-  console.log(data.data.data)
+  //console.log(data.data.data)
+
+  const CountHandler = (event) => {
+    if (event == true && data.data.data.count > CartCount) setCartCount(CartCount + 1);
+    else if (event == false && CartCount > 1) setCartCount(CartCount - 1);
+  };
 
   const CheckPackaging = (type, isSub) => {
 
-    console.log(type, isSub)
+    //console.log(type, isSub)
     if (isSub == false) {
       switch (type) {
 
@@ -51,6 +61,24 @@ function Detail() {
       }
     }
   }
+  const AddToCart = async (event) => {
+    console.log('더한다!');
+
+    const Payload = {
+      goodsId : data.data.data.goodsId,
+      amount : CartCount,
+    }
+    console.log(Payload)
+    try {
+      const res = await mutate.mutateAsync(Payload)
+      window.alert(`장바구니 추가 성공!`)
+      navi('/')
+      console.log(res)
+    } catch(error) {
+      window.alert(`재고 수량 초과!`)
+
+    }
+  };
 
   console.log(data.data)
   return (<>
@@ -74,13 +102,24 @@ function Detail() {
             <DetailContentsBox>
               <DetailContentsBoxLeft>상품 선택</DetailContentsBoxLeft>
               <DetailContentsBoxRight>
-                
+
+                <CartAddBox>
+                <ModalCountBox>
+                  <ModalCountButton
+                    imageUrl={'/minus.svg'}
+                    onClick={() => CountHandler(false)}
+                  ></ModalCountButton>
+                  <ModalCount>{CartCount}</ModalCount>
+                  <ModalCountButton
+                    imageUrl={'/plus.svg'}
+                    onClick={() => CountHandler(true)}
+                  ></ModalCountButton>
+                </ModalCountBox>
+                  <p> {CartCount * data.data.data.price} 원</p>
+                </CartAddBox>
               </DetailContentsBoxRight>
             </DetailContentsBox>
-            <CheckCountBox>
-              <StPuppleButton>장바구니</StPuppleButton>
-
-            </CheckCountBox>
+            <StPuppleButton onClick={()=> AddToCart()}>장바구니</StPuppleButton>
           </DetailContentsContainer>
 
         </RightBox>
@@ -262,7 +301,30 @@ display: block;
     line-height: 16px;
     white-space: pre-line;
 `
+const CartAddBox = styled.div`
+    display: flex;
+    width: 430px;
+    flex-direction: row;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    padding: 11px 10px 11px 15px;
+    font-size: 12px;
+    border-left: 1px solid rgb(244, 244, 244);
+    border-top: 1px solid rgb(244, 244, 244);
+    border-right: 1px solid rgb(244, 244, 244);
+`
+
 const CheckCountBox = styled.div`
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    font-family: "Noto Sans", "malgun gothic", AppleGothic, dotum, sans-serif;
+    --swiper-theme-color: #007aff;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    color: #333;
+    letter-spacing: -0.5px;
+    box-sizing: border-box;
+    margin: 0;
     display: flex;
     flex-direction: column;
     -webkit-box-pack: justify;
@@ -272,4 +334,5 @@ const CheckCountBox = styled.div`
     border-left: 1px solid rgb(244, 244, 244);
     border-top: 1px solid rgb(244, 244, 244);
     border-right: 1px solid rgb(244, 244, 244);
-`
+    border-bottom: 1px solid rgb(244, 244, 244);
+    `
