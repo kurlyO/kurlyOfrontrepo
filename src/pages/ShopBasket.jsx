@@ -12,7 +12,7 @@ function Goods({ item }) {
   const deleteMutate = useMutation(cartDel, {
     onSuccess: (data) => {
       console.log('해당 제품이 삭제 되었씀미다');
-      window.location.reload()
+      window.location.reload();
     },
   });
 
@@ -37,24 +37,25 @@ function Goods({ item }) {
   });
 
   const putHandler = (event) => {
-    if (event.isPlus == true && item.goodsCount > num){
-      console.log("aaaaa")
+    if (event.isPlus == true && item.goodsCount > num) {
+      console.log('추가추가');
       try {
         const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
         console.log(response);
-        setNum(num+1)
+        setNum(num + 1);
       } catch (error) {
         console.log(error);
-    }}
-    else if (event.isPlus == false && num > 1){
-      console.log("sssss")
+      }
+    } else if (event.isPlus == false && num > 1) {
+      console.log('sssss');
       try {
         const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
         console.log(response);
-        setNum(num-1)
+        setNum(num - 1);
       } catch (error) {
         console.log(error);
-    }}
+      }
+    }
     /*{
       console.log(cartId);
       setNum(num + 1);

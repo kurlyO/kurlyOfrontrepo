@@ -96,7 +96,8 @@ function SignUp() {
     gender: '',
     birth: '',
   });
-
+  const [duplication, setDuplication] = useState(false);
+  const [isDuplicateChecked, setIsDuplicateChecked] = useState(false);
   //onChange 통합 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -131,6 +132,7 @@ function SignUp() {
 
   //회원가입
   const joinButtonHandler = async (e) => {
+    console.log('재우짱짱맨');
     e.preventDefault();
     const { account, password, name, email, address, phone, gender, birth, passwordConfirm } = join;
 
@@ -150,8 +152,19 @@ function SignUp() {
     }
     if (password !== passwordConfirm) {
       alert('비번이 달라요');
+      return;
     }
-
+    if (duplication === false) {
+      console.log('중복확인검사???');
+      alert('중복검사 확인 부탁해요');
+      return;
+    }
+    if (isDuplicateChecked === false) {
+      console.log('중복확인검사???');
+      alert('이메일 중복검사 확인 부탁해요');
+      return;
+    }
+    console.log('재우짱짱맨1');
     const obj = {
       account,
       password,
@@ -165,42 +178,65 @@ function SignUp() {
     console.log(obj);
     try {
       const response = await mutate.mutateAsync(obj);
-      const { status, message } = response.data;
       console.log(response);
-      if (status === true) {
+      const { status, message } = response.data;
+      console.log(status);
+      if ((status = true)) {
         navigate('/');
+      } else {
+        console.log('중복중복중복');
+        alert('중복검사해주세요');
       }
       console.log(response);
     } catch (error) {
-      console.log('에러입니다');
+      console.log('중복에러에러에러');
     }
   };
 
   //중복검사
-  const checkHandler = async (bool) => {
-    let check = '';
-    let test = null;
-    if (bool == true) {
-      check = join.account;
-    } else {
-      check = join.email;
-    }
-    if (check !== '') {
-      console.log(join.account);
-      console.log(bool);
-      if (bool == true) {
-        test = await idCheck(check);
-      } else {
-        test = await emailCheck(check);
+  const checkHandler = async (duplication) => {
+    console.log(duplication);
+    if (join.account && join.email) {
+      let isDuplicate = false;
+      if (duplication === true) {
+        isDuplicate = await idCheck(join.account);
+      } else if (duplication === true) {
+        isDuplicate = await emailCheck(join.email);
       }
-      if (test.data.success == false) {
-        alert('중복');
+      const isNotDuplicate = !isDuplicate;
+      setDuplication(isNotDuplicate);
+      if (isDuplicate) {
+        alert('사용가능합니다.');
       } else {
-        alert('중복아님');
+        alert('중복이 아닙니다.');
       }
-    } else {
-      console.log('야식은 치킨이답');
     }
+
+    // let check = '';
+    // let test = null;
+    // if (duplication == true) {
+    //   check = join.account;
+    // } else {
+    //   check = join.email;
+    // }
+    // if (check !== '') {
+    //   console.log(join.account);
+    //   console.log(duplication);
+    //   if (duplication == true) {
+    //     test = await idCheck(check);
+    //   } else {
+    //     test = await emailCheck(check);
+    //   }
+    //   if ((test.data.success = false)) {
+    //     alert('중복');
+    //   } else {
+    //     alert('중복아님');
+    //   }
+    // } else {
+    //   console.log('야식은 치킨이답');
+    // }
+    // setDuplication(false);
+    // setIsDuplicateChecked(true);
   };
 
   return (
@@ -223,7 +259,7 @@ function SignUp() {
             dupButton={'중복검사'}
             showBorder={true}
             onChange={handleInputChange}
-            onClick={() => checkHandler(true)}
+            onClick={() => checkHandler(duplication)}
           />
           {join.account.length < 1 ? null : !validatememberId(join.account) ? (
             <StInfoUl>
