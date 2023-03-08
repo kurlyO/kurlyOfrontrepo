@@ -5,9 +5,10 @@ import { useState } from 'react';
 import { StContainer, StCommonTitle } from '../elements/Common';
 import { cartList, cartDel, cartPut } from '../api/CartAPI';
 import { useMutation } from 'react-query';
+import { ModalCountButton, ModalCountBox, ModalCount } from '../components/Modal/ModalStyle';
+import { cartpost } from '../api/CartAPI';
 
 function Goods({ item }) {
-  //삭제------------------------------------------------------------------
   const deleteMutate = useMutation(cartDel, {
     onSuccess: (data) => {
       console.log('해당 제품이 삭제 되었씀미다');
@@ -22,152 +23,213 @@ function Goods({ item }) {
     }
   };
   console.log(item);
-  //수량 수정(put)-----------------------------------------------------------
-  const [num, setNum] = useState(item.amount);
 
+  const [num, setNum] = useState(item.amount);
+  const [selector, setSlector] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(null);
+  //   console.log(selector);
+  //   console.log(totalPrice);
   const putMutate = useMutation(cartPut, {
     onSuccess: (data) => {
       console.log('서버의 수량이 수정되었씁니다');
     },
   });
-  const putHandler = (type, cartId) => {
-    let isPlus = false;
-    if (type === 'plus') {
-      isPlus = true;
+  const putHandler = (isPlus, cartId) => {
+    if (isPlus === 'plus') {
+      console.log(cartId);
       setNum(num + 1);
     } else {
-      isPlus = false;
+      isPlus = true;
       setNum(num - 1);
     }
+    if (num == 1 && isPlus == 'minus') {
+      setNum(num + 0);
+    }
     try {
-      const response = putMutate.mutateAsync({ cartId, isPlus });
-      //payload잘되는지 테스트
-      //   console.log({ cartId, isPlus });
+      console.log(item.cartId);
+      const response = putMutate.mutateAsync({ cartId: item.cartId, isPlus });
+      console.log({ cart: item.cartId, isPlus });
     } catch (error) {
       console.log(error);
     }
   };
+  //화폐단위
   const checkPrice = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
+  const selectorHandler = (e) => {
+    if (e.target.checked) {
+      setTotalPrice(totalPrice + item.price);
+    } else {
+      setTotalPrice(null);
+    }
+  };
+
   return (
     <ListBox key={item.id}>
+      <input value={selector} onChange={selectorHandler} type={'checkbox'} />
       <ImgBox src={item.image} />
       <span>{item.goodsName}</span>
-      <div style={{ width: '10px', height: '10px' }}>
-        <button onClick={() => putHandler('minus', item.cartId)}>-</button>
-        <div>{num}</div>
-        <button onClick={() => putHandler('plus', item.cartId)}>+</button>
-      </div>
-      <span>{checkPrice(item.price * num)}</span>
+      <ModalCountBox>
+        <ModalCountButton
+          imageUrl={'/minus.svg'}
+          onClick={() => putHandler({ isPlus: false, cardid: item.cartId })}
+        >
+          -
+        </ModalCountButton>
+        <ModalCount>{num}</ModalCount>
+        <ModalCountButton
+          imageUrl={'/plus.svg'}
+          onClick={() => putHandler({ isPlus: true, cardid: item.cartId })}
+        >
+          +
+        </ModalCountButton>
+      </ModalCountBox>
+      <span>{checkPrice(item.price * num)} 원</span>
       <button onClick={() => delHandler(item.cartId)}>삭제</button>
     </ListBox>
   );
 }
-
-//----------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 function ShopBasket() {
+  const [finalPrice, setFinalPrice] = useState();
+  console.log(finalPrice);
   const { isLoading, isError, data } = useQuery('cart', cartList);
+  const postMutate = useMutation(cartpost, {
+    onSuccess: (data) => {
+      alert('주문 성공!');
+      window.location.reload();
+    },
+  });
   if (isLoading) {
     console.log(data);
     <h1>상품목록 가져오는중</h1>;
   }
   if (!data) {
-    return <h1>서버에서 찜 목록을 가져오지 못했어요!</h1>;
+    return <h1>다시 로그인해주세요!</h1>;
   }
   if (!data.data || data.data.length === 0) {
     return <div>장바구니 채워줘</div>;
   }
   console.log('찜목록 불러오기 성공', data);
 
-  const cartData = data.data;
-  //   const price1 = cartData.cold[1].price;
-  //   const price2 = cartData.frozen.price;
-  //   const price3 = cartData.room_temperature.price;
-  //   const totalPrice = price1 + price2 + price3;
-  //   console.log({ price1, price2, price3 });
-  {
-    /* 앞에 string값 뒤에는 id,index값이어도 되고 */
-  }
+  const cartData = data.data.data;
+
+  const orderButtonHandler = (cartIdList) => {
+    try {
+      const response = postMutate.mutateAsync({ cartIdList });
+      console.log(cartIdList);
+    } catch (error) {
+      console.lof(error);
+    }
+  };
+  const checkPrice = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   return (
     <StContainer>
-      <StCommonTitle top="20px">
+      <StCommonTitle>
         <StCommonTitle>장바구니</StCommonTitle>
       </StCommonTitle>
-      <ShopBox>
-        <EntireT>
-          <EntireInT>
-            <EntireInCon1>
-              <div style={{ display: 'flex', marginTop: '50px', gap: '20px' }}>
-                <EntireInInput type="checkbox" />
-                <div style={{ width: '200px', fontWeight: '1000', fontSize: '15px' }}>
-                  전체선택 (0/0)
+      <div>
+        <ConcludeBox>
+          <ShopBox>
+            <EntireInT>
+              <EntireInCon1>
+                <div style={{ display: 'flex', gap: '20px' }}>
+                  <EntireInInput type="checkbox" />
+                  <div style={{ width: '200px', fontWeight: '500', fontSize: '15px' }}>
+                    전체선택 (0/0)
+                  </div>
                 </div>
-              </div>
-            </EntireInCon1>
-          </EntireInT>
-        </EntireT>
-        <EntireMidBoxs>
-          {cartData.cold ? <div>냉장식품</div> : null}
-          {cartData.cold.map((item) => {
-            return (
-              <VariousGoods key={`item-${item.id}`}>
-                {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
-              </VariousGoods>
-            );
-          })}
-          {cartData.frozen ? <div>냉동식품</div> : null}
-          {cartData.frozen.map((item) => {
-            return (
-              <VariousGoods key={`item-${item.id}`}>
-                {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
-              </VariousGoods>
-            );
-          })}
-          {cartData.room_temperature ? <div>상온식품</div> : null}
-          {cartData.room_temperature.map((item) => {
-            return (
-              <VariousGoods key={`item-${item.id}`}>
-                {cartData.room_temperature && cartData.room_temperature.length > 0 ? (
-                  <Goods item={item} />
-                ) : null}
-              </VariousGoods>
-            );
-          })}
-          {!data && (
-            <React.Fragment>
-              <div content="장바구니 비어있다" />
-            </React.Fragment>
-          )}
-        </EntireMidBoxs>
-        <EntireMidBox></EntireMidBox>
-        <SideBox>
-          <TotalPay>
-            <GoodsBox>
-              <GoodsBoxText>상품금액</GoodsBoxText>
-              <GoodsBoxText2>{cartData.cold.price}</GoodsBoxText2>
-            </GoodsBox>
-            <GoodsBox>
-              <GoodsBoxText>배송비</GoodsBoxText>
-              <GoodsBoxText2>0원</GoodsBoxText2>
-            </GoodsBox>
-            <GoodsBox>
-              <GoodsBoxText>결정예정금액</GoodsBoxText>
-              <GoodsBoxText2>2원</GoodsBoxText2>
-            </GoodsBox>
-          </TotalPay>
-        </SideBox>
-      </ShopBox>
+              </EntireInCon1>
+            </EntireInT>
+          </ShopBox>
+          <EntireMidBoxs>
+            {cartData.cold ? <div>냉장식품</div> : null}
+            {cartData.cold.map((item) => {
+              return (
+                <VariousGoods key={`item-${item.id}`}>
+                  {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
+                </VariousGoods>
+              );
+            })}
+            {cartData.frozen ? <div>냉동식품</div> : null}
+            {cartData.frozen.map((item) => {
+              return (
+                <VariousGoods key={`item-${item.id}`}>
+                  {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
+                </VariousGoods>
+              );
+            })}
+            {cartData.room_temperature ? <div>상온식품</div> : null}
+            {cartData.room_temperature.map((item) => {
+              return (
+                <VariousGoods key={`item-${item.id}`}>
+                  {cartData.room_temperature && cartData.room_temperature.length > 0 ? (
+                    <Goods item={item} />
+                  ) : null}
+                </VariousGoods>
+              );
+            })}
+            {!data && (
+              <React.Fragment>
+                <div content="장바구니 비어있다" />
+              </React.Fragment>
+            )}
+          </EntireMidBoxs>
+        </ConcludeBox>
+      </div>
+
+      <TotalPay>
+        <GoodsBox>
+          <GoodsBoxText>상품금액</GoodsBoxText>
+          <GoodsBoxText2></GoodsBoxText2>
+        </GoodsBox>
+        <GoodsBox>
+          <GoodsBoxText>배송비</GoodsBoxText>
+          <GoodsBoxText2>0원</GoodsBoxText2>
+        </GoodsBox>
+        <GoodsBox>
+          <GoodsBoxText>결정예정금액</GoodsBoxText>
+          <GoodsBoxText2>2원</GoodsBoxText2>
+        </GoodsBox>
+        <button
+          onClick={() =>
+            orderButtonHandler(
+              Object.keys(cartData)
+                .map((key) => cartData[key].map((item) => item.cartId))
+                .flat()
+            )
+          }
+        >
+          주문하기
+        </button>
+      </TotalPay>
     </StContainer>
   );
 }
 
+const ConcludeBox = styled.div`
+  width: 742px;
+  height: 942px;
+  padding: 10px 10px 10px 10px;
+  margin-right: 100px;
+  gap: 10px;
+  border: 1px solid green;
+`;
+
 const ShopBox = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 1050px;
-  height: 942px;
-  letter-spacing: -0.5px;
+  align-items: center;
+  width: 721px;
+  height: 25px;
+  padding: 18px 10px 16px 2px;
+  font-size: 25px;
+  line-height: 26px;
+  font-weight: 500;
+  border-bottom: 1px solid rgb(51, 51, 51);
 `;
 
 const EntireT = styled.div`
@@ -220,16 +282,6 @@ const EntireMidBoxs = styled.div`
   gap: 20px;
 `;
 //#eee4e48e;
-const SideBox = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 315px;
-  margin-top: 59px;
-  margin-right: 30px;
-  padding: 23px 19px 20px;
-`;
 
 const TotalPay = styled.div`
   display: flex;
@@ -240,8 +292,8 @@ const TotalPay = styled.div`
   height: 254px;
   position: absolute;
   top: 0;
-  margin-top: 23px;
-  margin-left: 10px;
+  margin-top: 480px;
+  margin-left: 990px;
   gap: 30px;
   padding: 19px 18px 18px 20px;
   border: 1px solid #f2f2f2;
@@ -274,7 +326,7 @@ const VariousGoods = styled.h4`
   justify-content: space-between;
   height: 60px;
   padding: 15px 5px 15px 0px;
-  border-top: 1px solid rgb(51, 51, 51);
+  border-top: 1px solid rgb(244, 244, 244);
   font-weight: 700;
   font-size: 18px;
   line-height: 26px;
