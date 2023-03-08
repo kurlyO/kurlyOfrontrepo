@@ -1,14 +1,18 @@
-import React from 'react';
+import  {  useEffect, useState, React } from 'react';
 import { QueryClient, useQuery } from 'react-query';
 import styled from 'styled-components';
-import { useState } from 'react';
 import { StContainer, StCommonTitle } from '../elements/Common';
 import { cartList, cartDel, cartPut } from '../api/CartAPI';
 import { useMutation } from 'react-query';
 import { ModalCountButton, ModalCountBox, ModalCount } from '../components/Modal/ModalStyle';
 import { cartpost } from '../api/CartAPI';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCartList, removeCartList,removeTargetCartList } from '../redux/cartCheckSlice';
 
 function Goods({ item }) {
+  const dispatch = useDispatch()
+  const checkListRedux = useSelector((state) => state.cartCheckSlice)
+  //console.log(item)
   const deleteMutate = useMutation(cartDel, {
     onSuccess: (data) => {
       console.log('해당 제품이 삭제 되었씀미다');
@@ -23,10 +27,10 @@ function Goods({ item }) {
       console.log(error);
     }
   };
-  console.log(item);
+ // console.log(item);
 
   const [num, setNum] = useState(item.amount);
-  const [selector, setSlector] = useState(false);
+  const [selector, setSelector] = useState(true);
   const [totalPrice, setTotalPrice] = useState(null);
   //   console.log(selector);
   //   console.log(totalPrice);
@@ -55,39 +59,30 @@ function Goods({ item }) {
       } catch (error) {
         console.log(error);
     }}
-    /*{
-      console.log(cartId);
-      setNum(num + 1);
-    } else {
-      isPlus = true;
-      setNum(num - 1);
-    }
-    if (num == 1 && isPlus == 'minus') {
-      setNum(num + 0);
-    }
-    try {
-      console.log(item.cartId);
-      const response = putMutate.mutateAsync({ cartId: item.cartId, isPlus });
-      console.log({ cart: item.cartId, isPlus });
-    } catch (error) {
-      console.log(error);
-    }*/
   };
   //화폐단위
   const checkPrice = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
-  const selectorHandler = (e) => {
-    if (e.target.checked) {
-      setTotalPrice(totalPrice + item.price);
-    } else {
-      setTotalPrice(null);
+  const selectorHandler = () => {
+    setSelector(!selector)
+    if(selector == false){
+      console.log("tttt")
+      dispatch(addToCartList({ cartId: item.cartId}))
     }
+    else{
+      console.log("ssss")
+      dispatch(removeTargetCartList({ cartId: item.cartId}))
+    }
+    console.log(checkListRedux)
   };
-
+  const backgroundImage = selector ? '/checkOn.svg' : '/checkOff.svg';
   return (
     <ListBox key={item.id}>
-      <input value={selector} onChange={selectorHandler} type={'checkbox'} />
+      <CheckButton onClick={() => selectorHandler()} backgroundImage = {backgroundImage} />
+      {/*<input value={selector} onChange={selectorHandler} type={'checkbox'} />*/}
+      
+
       <ImgBox src={item.image} />
       <span>{item.goodsName}</span>
       <ModalCountBox>
@@ -110,31 +105,85 @@ function Goods({ item }) {
     </ListBox>
   );
 }
+
+const CheckButton = styled.div`
+  width: 21px;
+  height: 21px;
+  background-image: url(${props => props.backgroundImage});
+  background-repeat: no-repeat;
+  background-size: cover;
+background-color: transparent;
+`
 //-----------------------------------------------------------------------------------------------
 function ShopBasket() {
+  const dispatch = useDispatch()
+
+  const checkListRedux = useSelector((state) => state.cartCheckSlice)
   const [finalPrice, setFinalPrice] = useState();
-  console.log(finalPrice);
-  const { isLoading, isError, data } = useQuery('cart', cartList);
+  const [cartLastList, setCartLastList] = useState()
+  const [cartData, setCartData] = useState()
+  const [checkList, SetCheckList] = useState([])
+  const getCart = useQuery(['cart'], cartList);
+
   const postMutate = useMutation(cartpost, {
     onSuccess: (data) => {
       alert('주문 성공!');
       window.location.reload();
     },
   });
-  if (isLoading) {
-    console.log(data);
+useEffect(() => {
+  if(getCart.data){
+    setCartData(getCart.data.data.data);
+    console.log('a')
+    let list = { "cartIdList" : []}
+    for(let i = 0; i < getCart.data.data.data.cold.length; i++){
+      checkList.push(false)
+      dispatch(addToCartList({ cartId: getCart.data.data.data.cold[i].cartId}))
+      list["cartIdList"].push(getCart.data.data.data.cold[i].cartId)
+      console.log(getCart.data.data.data.cold[i].cartId)
+    }
+    for(let i = 0; i < getCart.data.data.data.frozen.length; i++){
+      checkList.push(false)
+      dispatch(addToCartList({ cartId: getCart.data.data.data.frozen[i].cartId}))
+      list["cartIdList"].push(getCart.data.data.data.frozen[i].cartId)
+      console.log(getCart.data.data.data.frozen[i].cartId)
+    }
+    for(let i = 0; i < getCart.data.data.data.room_temperature.length; i++){
+      checkList.push(false)
+      dispatch(addToCartList({ cartId: getCart.data.data.data.room_temperature[i].cartId}))
+      list["cartIdList"].push(getCart.data.data.data.room_temperature[i].cartId)
+      console.log(getCart.data.data.data.room_temperature[i].cartId)
+    }
+    setCartLastList(list)
+  }
+}, [getCart.data])
+
+/*console.log(cartLastList)
+console.log(checkList)
+console.log(cartData)
+*/
+console.log(checkListRedux)
+
+const CheckHandler = (e) => {
+  let List ={"cartIdList" : []}
+  for(let i = 0; i < checkList.length; i++){
+      if(checkList[i] == true){
+        List["cartIdList"].push(cartLastList["cartIdList"][i])
+        console.log(List)
+      }
+  }
+  setCartLastList(List)
+}
+  if (getCart.isLoading) {
     <h1>상품목록 가져오는중</h1>;
   }
-  if (!data) {
+  if (!getCart.data) {
     return <h1>다시 로그인해주세요!</h1>;
   }
-  if (!data.data || data.data.length === 0) {
+  if (!getCart.data.data || getCart.data.data.length === 0) {
     return <div>장바구니 채워줘</div>;
   }
-  console.log('찜목록 불러오기 성공', data);
-
-  const cartData = data.data.data;
-
+  console.log('찜목록 불러오기 성공', getCart.data.data.data);
   const orderButtonHandler = (cartIdList) => {
     try {
       const response = postMutate.mutateAsync({ cartIdList });
@@ -167,33 +216,33 @@ function ShopBasket() {
             </EntireInT>
           </ShopBox>
           <EntireMidBoxs>
-            {cartData.cold ? <div>냉장식품</div> : null}
-            {cartData.cold.map((item) => {
+            {cartData?.cold ? <div>냉장식품</div> : null}
+            {cartData?.cold.map((item) => {
               return (
-                <VariousGoods key={`item-${item.id}`}>
-                  {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
+                <VariousGoods key={`item-${item.cartId}`}>
+                  {cartData?.cold && cartData?.cold.length > 0 ? <Goods item={item} /> : null}
                 </VariousGoods>
               );
             })}
-            {cartData.frozen ? <div>냉동식품</div> : null}
-            {cartData.frozen.map((item) => {
+            {cartData?.frozen ? <div>냉동식품</div> : null}
+            {cartData?.frozen.map((item) => {
               return (
-                <VariousGoods key={`item-${item.id}`}>
-                  {cartData.cold && cartData.cold.length > 0 ? <Goods item={item} /> : null}
+                <VariousGoods key={`item-${item.cartId}`}>
+                  {cartData?.frozen && cartData?.frozen.length > 0 ? <Goods item={item} /> : null}
                 </VariousGoods>
               );
             })}
-            {cartData.room_temperature ? <div>상온식품</div> : null}
-            {cartData.room_temperature.map((item) => {
+            {cartData?.room_temperature ? <div>상온식품</div> : null}
+            {cartData?.room_temperature.map((item) => {
               return (
-                <VariousGoods key={`item-${item.id}`}>
-                  {cartData.room_temperature && cartData.room_temperature.length > 0 ? (
+                <VariousGoods key={`item-${item.cartId}`}>
+                  {cartData?.room_temperature && cartData?.room_temperature.length > 0 ? (
                     <Goods item={item} />
                   ) : null}
                 </VariousGoods>
               );
             })}
-            {!data && (
+            {!getCart.data && (
               <React.Fragment>
                 <div content="장바구니 비어있다" />
               </React.Fragment>
@@ -216,12 +265,12 @@ function ShopBasket() {
           <GoodsBoxText2>2원</GoodsBoxText2>
         </GoodsBox>
         <button
-          onClick={() =>
-            orderButtonHandler(
+          onClick={() => CheckHandler()
+            /*orderButtonHandler(
               Object.keys(cartData)
                 .map((key) => cartData[key].map((item) => item.cartId))
                 .flat()
-            )
+            )*/
           }
         >
           주문하기
