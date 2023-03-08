@@ -68,6 +68,7 @@ function Home() {
   const [CateUp, setCateUp] = useState(false)
   const [CurrentCate, setCurrentCate] = useState('')
   const [checkCategoryBool, setCheckCategoryBool] = useState(false)
+  const [TopName, setTopName] = useState('전체보기')
   const getList = useQuery(['getList'], getMainList)
   const getCategory = useQuery(['getCate', CurrentCate], () => getCateList(CurrentCate), {enabled:CateUp})
   let list = null;
@@ -92,13 +93,15 @@ function Home() {
 
   const CategoryHandler = (event) =>{
     //console.log(event)
-    setCurrentCate(event)
+    setTopName(event.name)
+    setCurrentCate(event.name)
     setCateUp(true)
     //getCateList(event)
     //console.log('aaaa')
 
     //네트워크 펼쳐서 리패치가 뭘 받아오는지 체크하는거 잊지말고
-    getCategory.refetch(event)
+    if(event.isLoading == true) getList.refetch()
+    else getCategory.refetch(event)
     //console.log(getCategory)
     //이 밑에선 반영이 안돼!
     //setPageList(getCategory.data)
@@ -117,33 +120,37 @@ function Home() {
   return (
     <>
       <PageContainer>
-        <CategoryTitle>카테고리입니다</CategoryTitle>
+        <CategoryTitle>{TopName}</CategoryTitle>
         <CategoryContainer>
-          <CategoryButton onClick={() => CategoryHandler('채소')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'전체보기', isLoading: true })}>
+            <CategoryButtonText>전체보기</CategoryButtonText>
+          </CategoryButton>
+
+          <CategoryButton onClick={() => CategoryHandler({name:'채소', isLoading: false })}>
             <CategoryButtonText>채소</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton onClick={() => CategoryHandler('육류')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'육류', isLoading: false })}>
             <CategoryButtonText>육류</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton onClick={() => CategoryHandler('유제품')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'유제품', isLoading: false })}>
             <CategoryButtonText>유제품</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton onClick={() => CategoryHandler('과일')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'과일', isLoading: false })}>
             <CategoryButtonText>과일</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton onClick={() => CategoryHandler('해산물')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'해산물', isLoading: false })}>
             <CategoryButtonText>해산물</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton onClick={() => CategoryHandler('간편식')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'간편식', isLoading: false })}>
             <CategoryButtonText>간편식</CategoryButtonText>
           </CategoryButton>
 
-          <CategoryButton onClick={() => CategoryHandler('가공식품')}>
+          <CategoryButton onClick={() => CategoryHandler({name:'가공식품', isLoading: false })}>
             <CategoryButtonText>가공식품</CategoryButtonText>
           </CategoryButton>
 

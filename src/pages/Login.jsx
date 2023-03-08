@@ -38,11 +38,12 @@ function Login() {
       const { status, message } = response.data;
       console.log(response.data);
       if (status == true) {
-        alert('드디어 로그인 성공!!!');
+        alert('로그인 성공!!!');
         const expires = moment().add('60', 'm').toDate();
         const token = response.headers.authorization;
         console.log(token);
         setCookie('token', token, { expires, path: '/', sameSite: 'strict' });
+        localStorage.setItem('username', response.data.data.name)
         navigate('/');
       }
     } catch (error) {

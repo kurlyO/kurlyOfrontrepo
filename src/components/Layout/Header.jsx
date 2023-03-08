@@ -2,6 +2,14 @@ import { useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
+const UserName = styled.span`
+  padding-top: 5px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #333;
+    line-height: 35px;
+    letter-spacing: -0.35px;
+`
 const HeaderStyles = styled.header`
   width: 100%;
   height: 100px;
@@ -104,6 +112,8 @@ function Header() {
       </div>
 
       <StButtonBox>
+        {(!!localStorage.getItem('username')) && (<UserName>환영합니다 {localStorage.getItem('username')}님</UserName>)}
+        
         <TopButton
           color="rgb(95, 0, 128)"
           onClick={() => {
