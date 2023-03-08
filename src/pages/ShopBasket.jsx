@@ -12,6 +12,7 @@ function Goods({ item }) {
   const deleteMutate = useMutation(cartDel, {
     onSuccess: (data) => {
       console.log('해당 제품이 삭제 되었씀미다');
+      window.location.reload()
     },
   });
 
@@ -34,8 +35,27 @@ function Goods({ item }) {
       console.log('서버의 수량이 수정되었씁니다');
     },
   });
-  const putHandler = (isPlus, cartId) => {
-    if (isPlus === 'plus') {
+
+  const putHandler = (event) => {
+    if (event.isPlus == true && item.goodsCount > num){
+      console.log("aaaaa")
+      try {
+        const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
+        console.log(response);
+        setNum(num+1)
+      } catch (error) {
+        console.log(error);
+    }}
+    else if (event.isPlus == false && num > 1){
+      console.log("sssss")
+      try {
+        const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
+        console.log(response);
+        setNum(num-1)
+      } catch (error) {
+        console.log(error);
+    }}
+    /*{
       console.log(cartId);
       setNum(num + 1);
     } else {
@@ -51,7 +71,7 @@ function Goods({ item }) {
       console.log({ cart: item.cartId, isPlus });
     } catch (error) {
       console.log(error);
-    }
+    }*/
   };
   //화폐단위
   const checkPrice = (num) => {
@@ -73,14 +93,14 @@ function Goods({ item }) {
       <ModalCountBox>
         <ModalCountButton
           imageUrl={'/minus.svg'}
-          onClick={() => putHandler({ isPlus: false, cardid: item.cartId })}
+          onClick={() => putHandler({ isPlus: false, cartId: item.cartId })}
         >
           -
         </ModalCountButton>
         <ModalCount>{num}</ModalCount>
         <ModalCountButton
           imageUrl={'/plus.svg'}
-          onClick={() => putHandler({ isPlus: true, cardid: item.cartId })}
+          onClick={() => putHandler({ isPlus: true, cartId: item.cartId })}
         >
           +
         </ModalCountButton>
