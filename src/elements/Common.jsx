@@ -17,21 +17,23 @@ export const StContainer = styled.div`
   flex-direction: column;
   justify-content: ${(props) => props.justifyContent};
   align-items: center;
-  margin-top: 30px;
+  margin-top: 10px;
   background-color: rgb(255, 255, 255);
   font-size: 14px;
   color: #333;
+  margin-right: 100px;
+  border: 2px solid red;
 `;
 export const StCommonTitle = styled.div`
   margin-top: ${(props) => props.top};
-  padding-bottom: 0;
   margin-bottom: 50px;
   font-size: 28px;
   line-height: 35px;
-  font-weight: 500;
+  font-weight: 1000;
   text-align: center;
   letter-spacing: -1px;
   color: #333;
+  padding: 30px;
 `;
 
 // function Essential(props) {

@@ -17,7 +17,7 @@ instance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
+//장바구니 get
 export const cartList = async () => {
   const response = await instance.get('https://spar-bk.shop/api/cart');
   return response;
@@ -34,15 +34,24 @@ export const cartAdd = async (data) => {
   return response;
 };
 
+//장바구니 목록 delelet
 export const cartDel = async (cartId) => {
   const response = await instance.delete(`https://spar-bk.shop/api/cart/${cartId}`);
   return response;
 };
 
+//장바구니 카운트 put
 export const cartPut = async ({ cartId, isPlus }) => {
+  console.log(cartId, isPlus);
   const response = await instance.put(`https://spar-bk.shop/api/cart/amount/${cartId}`, {
     isPlus,
   });
   return response;
 };
 //몸통은 객체에 담아서 보내기
+
+//장바구니 수정정보 post
+export const cartpost = async (cartIdList) => {
+  const response = await instance.post('https://spar-bk.shop/api/cart/bought', cartIdList);
+  return response;
+};
