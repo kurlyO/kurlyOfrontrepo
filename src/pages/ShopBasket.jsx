@@ -302,7 +302,7 @@ const CheckHandler = (e) => {
           <GoodsBoxText>결정예정금액</GoodsBoxText>
           <GoodsBoxText2>{checkPriceRedux.cartListPrice}원</GoodsBoxText2>
         </GoodsBox>
-        <StPuppleButton onClick={() => CheckHandler()}>
+        <StPuppleButton width = {'260px'} height = {'60px'} onClick={() => CheckHandler()}>
           주문하기
         </StPuppleButton>
       </TotalPay>
@@ -312,12 +312,6 @@ const CheckHandler = (e) => {
     </StContainer>
   );
 }
-
-const CategoryBox = styled.div`
-  
-  
-`
-
 const ConcludeBox = styled.div`
 display: flex;
 flex-direction: row;
