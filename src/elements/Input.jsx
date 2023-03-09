@@ -58,13 +58,12 @@ export const StDupButton = styled.button`
   width: 120px;
   height: 44px;
   margin-left: 8px;
-  border-radius: 3px;
   font-weight: 1000;
-  color: #4b0e4b;
-  &:hover {
-    background-color: skyblue;
-    color: blue;
-  }
+  border-radius: 3px;
+  color: rgb(95, 0, 128);
+  background-color: rgb(255, 255, 255);
+  border: 1px solid purple;
+  cursor: pointer;
 `;
 
 //span

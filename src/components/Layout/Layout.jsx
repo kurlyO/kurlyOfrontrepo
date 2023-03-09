@@ -12,7 +12,6 @@ function Layout({ children }) {
     <div>
       <Header />
       <LayoutStyles>{children}</LayoutStyles>
-      <Footer />
     </div>
   );
 }

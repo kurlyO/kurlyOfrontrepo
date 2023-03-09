@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-
+import { getCookie } from '../../utils/cookies';
 import styled from 'styled-components';
 
 const UserName = styled.span`
   padding-top: 5px;
-    font-size: 12px;
-    font-weight: 400;
-    color: #333;
-    line-height: 35px;
-    letter-spacing: -0.35px;
-`
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  line-height: 35px;
+  letter-spacing: -0.35px;
+`;
 const HeaderStyles = styled.header`
   width: 100%;
   height: 100px;
@@ -80,6 +80,7 @@ const ShopButton = styled.button`
 //url은 함수로 취급해서 이렇게 props를 넘겨준다?
 
 function Header() {
+  const token = getCookie('token');
   const navigate = useNavigate();
 
   return (
@@ -104,7 +105,7 @@ function Header() {
 
         <CategoryBox>
           <Span1 url="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNiAxNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0wIDBoMTZ2MS43SDBWMHptMCA2LjE1aDE2djEuN0gwdi0xLjd6bTAgNi4xNWgxNlYxNEgwdi0xLjd6IiBmaWxsPSIjMzMzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg=="></Span1>
-          <Span2>카테코리</Span2>
+          <Span2>카테고리</Span2>
         </CategoryBox>
       </div>
       <div style={{ marginLeft: '20px', marginBottom: '10px' }}>
@@ -112,24 +113,32 @@ function Header() {
       </div>
 
       <StButtonBox>
-        {(!!localStorage.getItem('username')) && (<UserName>환영합니다 {localStorage.getItem('username')}님</UserName>)}
-        
-        <TopButton
-          color="rgb(95, 0, 128)"
-          onClick={() => {
-            navigate('/signup');
-          }}
-        >
-          회원가입
-        </TopButton>
-        <TopButton
-          onClick={() => {
-            navigate('/login');
-          }}
-        >
-          로그인
-        </TopButton>
+        {!!localStorage.getItem('username') && (
+          <UserName>환영합니다 {localStorage.getItem('username')}님</UserName>
+        )}
+
+        {getCookie(token) && (
+          <>
+            {' '}
+            <TopButton
+              color="rgb(95, 0, 128)"
+              onClick={() => {
+                navigate('/signup');
+              }}
+            >
+              회원가입
+            </TopButton>
+            <TopButton
+              onClick={() => {
+                navigate('/login');
+              }}
+            >
+              로그인
+            </TopButton>
+          </>
+        )}
       </StButtonBox>
+
       <ShopButtonBox>
         <ShopButton
           url="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzYiIGhlaWdodD0iMzYiIHZpZXdCb3g9IjAgMCAzNiAzNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBhdGggZD0iTTM2IDM2SDBWMGgzNnoiLz4KICAgICAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1LjE2NCA2LjU0NykiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxLjciPgogICAgICAgICAgICA8cGF0aCBkPSJtMjUuNjggMy42Ni0yLjcyIDExLjU3SDcuMzdMNC42NiAzLjY2eiIvPgogICAgICAgICAgICA8Y2lyY2xlIGN4PSIyMC41MiIgY3k9IjIwLjc4IiByPSIyLjE0Ii8+CiAgICAgICAgICAgIDxjaXJjbGUgY3g9IjkuODEiIGN5PSIyMC43OCIgcj0iMi4xNCIvPgogICAgICAgICAgICA8cGF0aCBkPSJNMCAwaDMuOGwxLjc2IDcuNSIvPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+Cg=="

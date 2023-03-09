@@ -13,6 +13,7 @@ import {
 import { StInfoUl, StContainer, StCommonTitle } from '../elements/Common';
 import { sitejoin, idCheck, emailCheck } from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { StPuppleButton } from '../elements/Button';
 
 //props확인하여 조건부 렌더링
 function InputComps(props) {
@@ -29,6 +30,7 @@ function InputComps(props) {
           type={props.type}
           name={props.naming}
           placeholder={props.holder}
+          value={props.value}
           onChange={props.onChange}
           flex={props.flex}
         />
@@ -46,7 +48,10 @@ function Radio(props) {
   return (
     <StRadioContainer>
       <StGenderText>
-        <StGenderLebel>성별</StGenderLebel>
+        <StGenderLebel>
+          성별
+          <StSpan>*</StSpan>
+        </StGenderLebel>
       </StGenderText>
       <StLargeLebelBox>
         <StSmallLebelBox>
@@ -96,8 +101,7 @@ function SignUp() {
     gender: '',
     birth: '',
   });
-  const [duplication, setDuplication] = useState(false);
-  const [isDuplicateChecked, setIsDuplicateChecked] = useState(false);
+
   //onChange 통합 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -132,7 +136,6 @@ function SignUp() {
 
   //회원가입
   const joinButtonHandler = async (e) => {
-    console.log('재우짱짱맨');
     e.preventDefault();
     const { account, password, name, email, address, phone, gender, birth, passwordConfirm } = join;
 
@@ -154,17 +157,7 @@ function SignUp() {
       alert('비번이 달라요');
       return;
     }
-    if (duplication === false) {
-      console.log('중복확인검사???');
-      alert('중복검사 확인 부탁해요');
-      return;
-    }
-    if (isDuplicateChecked === false) {
-      console.log('중복확인검사???');
-      alert('이메일 중복검사 확인 부탁해요');
-      return;
-    }
-    console.log('재우짱짱맨1');
+
     const obj = {
       account,
       password,
@@ -181,62 +174,59 @@ function SignUp() {
       console.log(response);
       const { status, message } = response.data;
       console.log(status);
-      if ((status = true)) {
+      if (status === true) {
+        console.log(status);
+        alert('회원가입이 완료되었습니다');
         navigate('/');
-      } else {
-        console.log('중복중복중복');
-        alert('중복검사해주세요');
       }
       console.log(response);
     } catch (error) {
-      console.log('중복에러에러에러');
+      alert('중복error');
     }
   };
+  //중복검사---------------------------------------------------------------
+  const [duplication, setDuplication] = useState(true);
+  const [isDuplicateChecked, setIsDuplicateChecked] = useState(false);
 
-  //중복검사
-  const checkHandler = async (duplication) => {
-    console.log(duplication);
-    if (join.account && join.email) {
-      let isDuplicate = false;
-      if (duplication === true) {
-        isDuplicate = await idCheck(join.account);
-      } else if (duplication === true) {
-        isDuplicate = await emailCheck(join.email);
-      }
-      const isNotDuplicate = !isDuplicate;
-      setDuplication(isNotDuplicate);
-      if (isDuplicate) {
-        alert('사용가능합니다.');
-      } else {
-        alert('중복이 아닙니다.');
-      }
+  const checkHandler = async (bool) => {
+    let check = '';
+    let test = null;
+    if (bool == true) {
+      check = join.account;
+    } else {
+      check = join.email;
     }
-
-    // let check = '';
-    // let test = null;
-    // if (duplication == true) {
-    //   check = join.account;
-    // } else {
-    //   check = join.email;
-    // }
-    // if (check !== '') {
-    //   console.log(join.account);
-    //   console.log(duplication);
-    //   if (duplication == true) {
-    //     test = await idCheck(check);
-    //   } else {
-    //     test = await emailCheck(check);
-    //   }
-    //   if ((test.data.success = false)) {
-    //     alert('중복');
-    //   } else {
-    //     alert('중복아님');
-    //   }
-    // } else {
-    //   console.log('야식은 치킨이답');
-    // }
-    // setDuplication(false);
-    // setIsDuplicateChecked(true);
+    if (check !== '') {
+      console.log(join.account);
+      console.log(bool);
+      if (bool == true) {
+        console.log(bool);
+        try {
+          test = await idCheck(check);
+        } catch (error) {
+          console.log('아이디 에러', error);
+          alert('아이디가 중복입니다');
+        }
+        console.log('testid', test);
+      } else if (!test?.data.success) {
+        try {
+          test = await emailCheck(check);
+          console.log('testemail');
+        } catch (error) {
+          console.log('이메일중복입니다', error);
+          alert('이메일이 중복입니다');
+        }
+      }
+      if ((test.data.success = false)) {
+        console.log('하ㅓ이', test.data.success);
+        alert('중복');
+      } else {
+        console.log('헬러');
+        alert('중복아님');
+      }
+    } else {
+      console.log('야식은 치킨이답');
+    }
   };
 
   return (
@@ -258,18 +248,15 @@ function SignUp() {
             holder={'아이디를 입력해주세요'}
             dupButton={'중복검사'}
             showBorder={true}
+            value={join.account}
             onChange={handleInputChange}
-            onClick={() => checkHandler(duplication)}
+            onClick={() => checkHandler(true)}
           />
           {join.account.length < 1 ? null : !validatememberId(join.account) ? (
             <StInfoUl>
               <li style={{ color: 'red' }}>4~10길이의 소문자, 숫자만 가능하다</li>
             </StInfoUl>
-          ) : (
-            <StInfoUl>
-              <li style={{ color: 'green' }}>참 잘했어요</li>
-            </StInfoUl>
-          )}
+          ) : null}
 
           <InputComps
             type={'password'}
@@ -285,11 +272,7 @@ function SignUp() {
                 합니다
               </li>
             </StInfoUl>
-          ) : (
-            <StInfoUl>
-              <li style={{ color: 'green' }}>참 잘했어요</li>
-            </StInfoUl>
-          )}
+          ) : null}
 
           <InputComps
             type={'password'}
@@ -300,13 +283,9 @@ function SignUp() {
           />
           {join.passwordConfirm.length < 1 ? null : join.passwordConfirm !== join.password ? (
             <StInfoUl>
-              <li style={{ color: 'red' }}>비밀번호 같게 쓰도록</li>
+              <li style={{ color: 'red' }}>동일한 비밀번호를 입력</li>
             </StInfoUl>
-          ) : (
-            <StInfoUl>
-              <li style={{ color: 'green' }}>둘 비번 같아요</li>
-            </StInfoUl>
-          )}
+          ) : null}
 
           <InputComps
             type={'text'}
@@ -329,17 +308,14 @@ function SignUp() {
             <StInfoUl>
               <li style={{ color: 'red' }}>이메일 형식을 입력하세요</li>
             </StInfoUl>
-          ) : (
-            <StInfoUl>
-              <li style={{ color: 'green' }}>이메일 형식을 입력했네요!</li>
-            </StInfoUl>
-          )}
+          ) : null}
 
           <InputComps
             type={'text'}
             content={'휴대폰'}
             naming={'phone'}
             holder={'숫자만 입력해주세요'}
+            value={join.account}
             onChange={handleInputChange}
           />
 
@@ -351,8 +327,16 @@ function SignUp() {
             naming={'birth'}
             onChange={handleInputChange}
           />
-
-          <button onClick={joinButtonHandler}>버튼</button>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <StPuppleButton
+              width="240px"
+              height="56px"
+              marginTop="40px"
+              onClick={joinButtonHandler}
+            >
+              가입하기
+            </StPuppleButton>
+          </div>
         </form>
       </div>
     </StContainer>
@@ -375,7 +359,7 @@ const StGenderText = styled.div`
   padding-top: 12px;
 `;
 const StGenderLebel = styled.label`
-  font-weight: 500;
+  font-weight: 1000;
   color: rgb(51, 51, 51);
   line-height: 20px;
 `;

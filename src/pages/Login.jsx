@@ -43,7 +43,7 @@ function Login() {
         const token = response.headers.authorization;
         console.log(token);
         setCookie('token', token, { expires, path: '/', sameSite: 'strict' });
-        localStorage.setItem('username', response.data.data.name)
+        localStorage.setItem('username', response.data.data.name);
         navigate('/');
       }
     } catch (error) {
@@ -54,13 +54,26 @@ function Login() {
   return (
     <StContainer justifyContent="center">
       <StForm>
-        <div>로그인페이지</div>
-        <StLoginInput value={account} onChange={IdOnchangeHandler} />
-        <StLoginInput value={password} onChange={passwordOnchangeHandler} />
+        <LoginTitle>로그인</LoginTitle>
+        <StLoginInput
+          value={account}
+          onChange={IdOnchangeHandler}
+          placeholder="아이디를 입력해주세요"
+        />
+        <StLoginInput
+          type="password"
+          value={password}
+          onChange={passwordOnchangeHandler}
+          placeholder="비밀번호를 입력해주세요"
+        />
       </StForm>
       <StButtonDiv>
-        <StPuppleButton onClick={loginHandler}>로그인</StPuppleButton>
-        <StWhiteButton onClick={() => navigate('/signup')}>회원가입</StWhiteButton>
+        <StPuppleButton width="367px" height="54px" onClick={loginHandler}>
+          로그인
+        </StPuppleButton>
+        <StWhiteButton width="367px" height="54px" onClick={() => navigate('/signup')}>
+          회원가입
+        </StWhiteButton>
       </StButtonDiv>
     </StContainer>
   );
@@ -74,6 +87,15 @@ const StContainer = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 38px;
+`;
+
+const LoginTitle = styled.div`
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 20px;
+  text-align: center;
+  margin-left: 30px;
+  margin-bottom: 30px;
 `;
 
 const StForm = styled.form`
