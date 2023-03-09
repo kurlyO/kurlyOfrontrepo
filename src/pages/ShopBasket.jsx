@@ -254,7 +254,7 @@ const CheckHandler = (e) => {
         <ConcludeBox>
           <div>
           <EntireMidBoxs>
-            {cartData?.cold.length > 0 ? <div>냉장식품</div> : null}
+            {cartData?.cold.length > 0 ? (<MiniContainer><CheckButton backgroundImage = {'/cold.svg'} /> <div>냉장식품</div></MiniContainer>) : null}
             {cartData?.cold.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
@@ -263,7 +263,7 @@ const CheckHandler = (e) => {
                 </VariousGoods>
               );
             })}
-            {cartData?.frozen.length > 0 ? <div>냉동식품</div> : null}
+            {cartData?.frozen.length > 0 ? (<MiniContainer><CheckButton backgroundImage = {'/frozen.svg'} /> <div>냉동식품</div></MiniContainer>) : null}
             {cartData?.frozen.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
@@ -272,7 +272,7 @@ const CheckHandler = (e) => {
                 </VariousGoods>
               );
             })}
-            {cartData?.room_temperature.length > 0 ? <div>상온식품</div> : null}
+            {cartData?.room_temperature.length > 0 ? (<MiniContainer><CheckButton backgroundImage = {'/roomtemp.svg'} /> <div>상온식품</div></MiniContainer>) : null}
             {cartData?.room_temperature.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
@@ -312,6 +312,13 @@ const CheckHandler = (e) => {
     </StContainer>
   );
 }
+
+const MiniContainer = styled.div`
+display: flex;
+align-items: center;
+margin-top: 10px;
+`
+
 const ConcludeBox = styled.div`
 display: flex;
 flex-direction: row;
@@ -372,6 +379,7 @@ const VariousGoods = styled.h4`
   height: 60px;
   padding: 15px 5px 15px 0px;
   border-top: 1px solid rgb(244, 244, 244);
+  margin-top: 15px;
   font-weight: 700;
   font-size: 18px;
   line-height: 26px;
