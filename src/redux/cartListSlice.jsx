@@ -2,30 +2,25 @@ import { createSlice } from "@reduxjs/toolkit";
 
 
 const initialState = {
-    cartList: []
+    cartListPrice: 0
 }
 
-const cartTotalSlicer = createSlice({
+const cartListSlice = createSlice({
     name: 'cartList',
     initialState,
     reducers:{
-        addToCartTotalList:(state, action) =>{
-            console.log(action.payload.cartId)
-            //state.cartIdList.push(action.payload.cartId)
-            if(state.cartIdList.indexOf(action.payload.cartId) === -1){
-                state.cartIdList.push(action.payload.cartId)
-            }
+        addToCartTotalPrice:(state, action) =>{
+            state.cartListPrice += action.payload.price
         },
-        removeCartTotalList:(state, action) =>{
-            state.cartIdList = []
+        removeCartTotalPrice:(state, action) =>{
+            state.cartListPrice = 0
         },
-        removeTargetCartTotalList: (state, action) => {
-            console.log(action.payload.cartId)
-            state.cartIdList = state.cartIdList.filter(item => item !== action.payload.cartId)
+        removeTargetCartTotalPrice: (state, action) => {
+            state.cartListPrice -= action.payload.price
         }
 
     }
 })
 
-export const {addToCartList, removeCartList, removeTargetCartList} = cartTotalSlicer.actions
-export default cartTotalSlicer.reducer;
+export const {addToCartTotalPrice, removeCartTotalPrice, removeTargetCartTotalPrice} = cartListSlice.actions
+export default cartListSlice.reducer;

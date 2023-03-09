@@ -15,14 +15,13 @@ export const StInfoUl = styled.ul`
 export const StContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: ${(props) => props.justifyContent};
+  justify-content: space-between;
   align-items: center;
   margin-top: 10px;
   background-color: rgb(255, 255, 255);
   font-size: 14px;
   color: #333;
   margin-right: 100px;
-  border: 2px solid red;
 `;
 export const StCommonTitle = styled.div`
   margin-top: ${(props) => props.top};
