@@ -9,7 +9,17 @@ import { cartpost } from '../api/CartAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCartList, removeCartList,removeTargetCartList } from '../redux/cartCheckSlice';
 
-function Goods({ item }) {
+function Goods(props) {
+  const [num, setNum] = useState(1);
+  useEffect(() => {
+    setNum(props.amount)
+  }, [])
+  console.log(props)
+  console.log(num)
+  console.log(props.amount)
+  useEffect(() => {
+    setNum(props.amount)
+  }, [props.amount])
   const dispatch = useDispatch()
   const checkListRedux = useSelector((state) => state.cartCheckSlice)
   //console.log(item)
@@ -19,7 +29,6 @@ function Goods({ item }) {
       window.location.reload();
     },
   });
-
   const delHandler = (id) => {
     try {
       const response = deleteMutate.mutateAsync(id);
@@ -29,7 +38,6 @@ function Goods({ item }) {
   };
  // console.log(item);
 
-  const [num, setNum] = useState(item.amount);
   const [selector, setSelector] = useState(true);
   const [totalPrice, setTotalPrice] = useState(null);
   //   console.log(selector);
@@ -41,7 +49,7 @@ function Goods({ item }) {
   });
 
   const putHandler = (event) => {
-    if (event.isPlus == true && item.goodsCount > num) {
+    if (event.isPlus == true && props.goodsCount > num) {
       console.log('추가추가');
       try {
         const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
@@ -68,40 +76,40 @@ function Goods({ item }) {
     setSelector(!selector)
     if(selector == false){
       console.log("tttt")
-      dispatch(addToCartList({ cartId: item.cartId}))
+      dispatch(addToCartList({ cartId: props.cartId}))
     }
     else{
       console.log("ssss")
-      dispatch(removeTargetCartList({ cartId: item.cartId}))
+      dispatch(removeTargetCartList({ cartId: props.cartId}))
     }
     console.log(checkListRedux)
   };
   const backgroundImage = selector ? '/checkOn.svg' : '/checkOff.svg';
   return (
-    <ListBox key={item.id}>
+    <ListBox key={props.id}>
       <CheckButton onClick={() => selectorHandler()} backgroundImage = {backgroundImage} />
       {/*<input value={selector} onChange={selectorHandler} type={'checkbox'} />*/}
       
 
-      <ImgBox src={item.image} />
-      <span>{item.goodsName}</span>
+      <ImgBox src={props.image} />
+      <span>{props.goodsName}</span>
       <ModalCountBox>
         <ModalCountButton
           imageUrl={'/minus.svg'}
-          onClick={() => putHandler({ isPlus: false, cartId: item.cartId })}
+          onClick={() => putHandler({ isPlus: false, cartId: props.cartId })}
         >
           -
         </ModalCountButton>
         <ModalCount>{num}</ModalCount>
         <ModalCountButton
           imageUrl={'/plus.svg'}
-          onClick={() => putHandler({ isPlus: true, cartId: item.cartId })}
+          onClick={() => putHandler({ isPlus: true, cartId: props.cartId })}
         >
           +
         </ModalCountButton>
       </ModalCountBox>
-      <span>{checkPrice(item.price * num)} 원</span>
-      <button onClick={() => delHandler(item.cartId)}>삭제</button>
+      <span>{checkPrice(props.price * num)} 원</span>
+      <button onClick={() => delHandler(props.cartId)}>삭제</button>
     </ListBox>
   );
 }
@@ -121,9 +129,12 @@ function ShopBasket() {
   const checkListRedux = useSelector((state) => state.cartCheckSlice)
   const [finalPrice, setFinalPrice] = useState();
   const [cartLastList, setCartLastList] = useState()
-  const [cartData, setCartData] = useState()
+  let [cartData, setCartData] = useState()
   const [checkList, SetCheckList] = useState([])
-  const getCart = useQuery(['cart'], cartList);
+  const getCart = useQuery(['cart'], cartList,{onSuccess: (data) => {
+    console.log(data.data.data)
+    setCartData(data.data.data)
+  }});
 
   const postMutate = useMutation(cartpost, {
     onSuccess: (data) => {
@@ -132,7 +143,7 @@ function ShopBasket() {
     },
   });
 useEffect(() => {
-  if(getCart.data){
+  if(getCart?.data){
     setCartData(getCart.data.data.data);
     console.log('a')
     let list = { "cartIdList" : []}
@@ -173,6 +184,13 @@ const CheckHandler = (e) => {
       }
   }
   setCartLastList(List)
+  console.log(checkListRedux)
+  try {
+    const response = postMutate.mutateAsync(checkListRedux);
+    console.log(checkListRedux);
+  } catch (error) {
+    console.lof(error);
+  }
 }
   if (getCart.isLoading) {
     <h1>상품목록 가져오는중</h1>;
@@ -184,6 +202,7 @@ const CheckHandler = (e) => {
     return <div>장바구니 채워줘</div>;
   }
   console.log('찜목록 불러오기 성공', getCart.data.data.data);
+  //console.log(cartData)
   const orderButtonHandler = (cartIdList) => {
     try {
       const response = postMutate.mutateAsync({ cartIdList });
@@ -220,7 +239,7 @@ const CheckHandler = (e) => {
             {cartData?.cold.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
-                  {cartData?.cold && cartData?.cold.length > 0 ? <Goods item={item} /> : null}
+                  {cartData?.cold && cartData?.cold.length > 0 ? <Goods cartId={item.cartId} goodsId={item.goodsId} amount={item.amount} goodsCount={item.goodsCount} goodsName={item.goodsName} image={item.image} price={item.price} /> : null}
                 </VariousGoods>
               );
             })}
@@ -228,7 +247,7 @@ const CheckHandler = (e) => {
             {cartData?.frozen.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
-                  {cartData?.frozen && cartData?.frozen.length > 0 ? <Goods item={item} /> : null}
+                  {cartData?.frozen && cartData?.frozen.length > 0 ? <Goods cartId={item.cartId} goodsId={item.goodsId} amount={item.amount} goodsCount={item.goodsCount} goodsName={item.goodsName} image={item.image} price={item.price} /> : null}
                 </VariousGoods>
               );
             })}
@@ -237,7 +256,7 @@ const CheckHandler = (e) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
                   {cartData?.room_temperature && cartData?.room_temperature.length > 0 ? (
-                    <Goods item={item} />
+                    <Goods  cartId={item.cartId} goodsId={item.goodsId} amount={item.amount} goodsCount={item.goodsCount} goodsName={item.goodsName} image={item.image} price={item.price}  />
                   ) : null}
                 </VariousGoods>
               );
