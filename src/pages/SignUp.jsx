@@ -150,11 +150,11 @@ function SignUp() {
       return;
     }
     if (!validateemail(email)) {
-      alert('이메일 형식으로 맞게 짜줘');
+      alert('이메일 형식으로 맞게 입력해주세요.');
       return;
     }
     if (password !== passwordConfirm) {
-      alert('비번이 달라요');
+      alert('비밀번호가 서로 다릅니다');
       return;
     }
 
@@ -181,7 +181,7 @@ function SignUp() {
       }
       console.log(response);
     } catch (error) {
-      alert('중복error');
+      alert('아이디 또는 이메일 중복확인 부탁드립니다.');
     }
   };
   //중복검사---------------------------------------------------------------
@@ -222,7 +222,7 @@ function SignUp() {
         alert('중복');
       } else {
         console.log('헬러');
-        alert('중복아님');
+        alert('사용가능합니다');
       }
     } else {
       console.log('야식은 치킨이답');
@@ -315,7 +315,7 @@ function SignUp() {
             content={'휴대폰'}
             naming={'phone'}
             holder={'숫자만 입력해주세요'}
-            value={join.account}
+            value={join.phone}
             onChange={handleInputChange}
           />
 

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { getCookie } from '../../utils/cookies';
+import { getCookie, removeCookie } from '../../utils/cookies';
 import styled from 'styled-components';
 
 const UserName = styled.span`
@@ -81,7 +81,15 @@ const ShopButton = styled.button`
 
 function Header() {
   const token = getCookie('token');
+  console.log(token);
+
   const navigate = useNavigate();
+  const logoutHandler = () => {
+    const id = removeCookie(token);
+    console.log(id);
+    alert('로그아웃되었습니다');
+    navigate('/');
+  };
 
   return (
     <HeaderStyles>
@@ -113,11 +121,11 @@ function Header() {
       </div>
 
       <StButtonBox>
-        {!!localStorage.getItem('username') && (
+        {!getCookie(token) && !!localStorage.getItem('username') && (
           <UserName>환영합니다 {localStorage.getItem('username')}님</UserName>
         )}
 
-        {getCookie(token) && (
+        {!token ? (
           <>
             {' '}
             <TopButton
@@ -136,6 +144,8 @@ function Header() {
               로그인
             </TopButton>
           </>
+        ) : (
+          <button onClick={logoutHandler}>로그아웃</button>
         )}
       </StButtonBox>
 
