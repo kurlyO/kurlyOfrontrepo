@@ -157,9 +157,6 @@ function ShopBasket() {
     console.log(data.data.data)
     console.log('zzzzzzzzzzzzz')
     setCartData(data.data.data)
-    for(let i = 0; i < data.data.data.cold.length; i++){
-      setFinalPrice(finalPrice + (data.data.data.cold[i].price * data.data.data.cold[i].amount))
-    }
     console.log(finalPrice)
   }});
 
@@ -172,6 +169,7 @@ function ShopBasket() {
 useEffect(() => {
   if(getCart?.data){
     //setFinalPrice(0)
+    dispatch(removeCartTotalPrice())
     setCartData(getCart.data.data.data);
     console.log(getCart.data.data.data)
     let list = { "cartIdList" : []}
@@ -185,7 +183,7 @@ useEffect(() => {
     for(let i = 0; i < getCart.data.data.data.frozen.length; i++){
       checkList.push(false)
       dispatch(addToCartList({ cartId: getCart.data.data.data.frozen[i].cartId}))
-      
+      //
       dispatch(addToCartTotalPrice({price : (getCart.data.data.data.frozen[i].price * getCart.data.data.data.frozen[i].amount)}))
       list["cartIdList"].push(getCart.data.data.data.frozen[i].cartId)
       //setFinalPrice(finalPrice + (getCart.data.data.data.frozen[i].price * getCart.data.data.data.frozen[i].amount))
@@ -256,7 +254,7 @@ const CheckHandler = (e) => {
         <ConcludeBox>
           <div>
           <EntireMidBoxs>
-            {cartData?.cold ? <div>냉장식품</div> : null}
+            {cartData?.cold.length > 0 ? <div>냉장식품</div> : null}
             {cartData?.cold.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
@@ -265,7 +263,7 @@ const CheckHandler = (e) => {
                 </VariousGoods>
               );
             })}
-            {cartData?.frozen ? <div>냉동식품</div> : null}
+            {cartData?.frozen.length > 0 ? <div>냉동식품</div> : null}
             {cartData?.frozen.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
@@ -274,7 +272,7 @@ const CheckHandler = (e) => {
                 </VariousGoods>
               );
             })}
-            {cartData?.room_temperature ? <div>상온식품</div> : null}
+            {cartData?.room_temperature.length > 0 ? <div>상온식품</div> : null}
             {cartData?.room_temperature.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
@@ -314,6 +312,11 @@ const CheckHandler = (e) => {
     </StContainer>
   );
 }
+
+const CategoryBox = styled.div`
+  
+  
+`
 
 const ConcludeBox = styled.div`
 display: flex;
