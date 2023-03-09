@@ -8,6 +8,10 @@ function CartModal(props) {
     const [CartCount, setCartCount] = useState(1);
     const [Total, setTotal] = useState(CartCount * props.price);
     const mutate = useMutation(cartAdd)
+    const checkPrice = (num) => {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+  
   
     const ModalClose = (event) => {
       if (event.target == event.currentTarget) {
@@ -45,7 +49,7 @@ function CartModal(props) {
             <ModalCostBox>
               <ModalGoodsNameSpan>{props.goodsName}</ModalGoodsNameSpan>
               <ModalCostBoxBottom>
-                <ModalCostBottom>{props.price} 원</ModalCostBottom>
+                <ModalCostBottom>{checkPrice(props.price)} 원</ModalCostBottom>
                 {/*----------------------------------------------------------------------------------*/}
 
                 <ModalCountBox>
@@ -65,7 +69,7 @@ function CartModal(props) {
               </ModalCostBoxBottom>
               <ModalCostBoxBottom style={{ paddingTop: '80px' }}>
                 <ModalCostBottom>합계</ModalCostBottom>
-                <ModalCostBottom> {CartCount * props.price} 원</ModalCostBottom>
+                <ModalCostBottom> {checkPrice(CartCount * props.price)} 원</ModalCostBottom>
               </ModalCostBoxBottom>
               <ModalCostBoxBottom>
                 <ModalBottomButton

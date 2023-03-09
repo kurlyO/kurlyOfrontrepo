@@ -22,6 +22,10 @@ function DetailContents(props) {
 }
 
 function Detail() {
+  
+  const checkPrice = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
   const navi = useNavigate()
   const mutate = useMutation(cartAdd)
     const [CartCount, setCartCount] = useState(1);
@@ -47,16 +51,26 @@ function Detail() {
     if (isSub == false) {
       switch (type) {
 
-        case ("COLD"):
-          return ("냉동")
+        case ("상온"):
+          return ("상온")
+          case ("냉동"):
+            return ("냉동")
+        case ("냉장"):
+          return ("냉장")
         default:
       }
     }
     else {
       switch (type) {
-
-        case ("COLD"):
-          return ("냉동제품은 받는 시간을 확인하여 상하는 일이 없도록 주의하십시오")
+        
+        case ("상온"):
+          return ("상온제품 수령 전 파손여부를 확인해주시길 바랍니다.")
+        
+        case ("냉장"):
+          return ("냉장제품은 받는 시간을 확인하여 상하는 일이 없도록 주의하십시오")
+        
+          case ("냉동"):
+            return ("냉동제품은 받는 시간을 확인하여 상하는 일이 없도록 주의하십시오")
         default:
       }
     }
@@ -90,7 +104,7 @@ function Detail() {
           <TopGoodsName>{data.data.data.goodsName}</TopGoodsName>
           <TopGoodsSubName>{data.data.data.summary}</TopGoodsSubName>
           <CostBox>
-            <CostNumberSpan>{data.data.data.price}</CostNumberSpan>
+            <CostNumberSpan>{checkPrice(data.data.data.price)}</CostNumberSpan>
             <CostWONSpan>원</CostWONSpan>
           </CostBox>
           <DetailContentsContainer>
@@ -98,7 +112,7 @@ function Detail() {
             <DetailContents Name={"판매자"} Contents={"스파르타 항해"} Sub={""} />
             <DetailContents Name={"포장타입"} Contents={CheckPackaging(data.data.data.packaging, false)} Sub={CheckPackaging(data.data.data.packaging, true)} />
 
-            <DetailContents Name={"판매단위"} Contents={"스파르타 항해"} Sub={""} />
+            <DetailContents Name={"판매단위"} Contents={"1"} Sub={""} />
             <DetailContentsBox>
               <DetailContentsBoxLeft>상품 선택</DetailContentsBoxLeft>
               <DetailContentsBoxRight>
@@ -115,11 +129,14 @@ function Detail() {
                     onClick={() => CountHandler(true)}
                   ></ModalCountButton>
                 </ModalCountBox>
-                  <p> {CartCount * data.data.data.price} 원</p>
+                  <p> {checkPrice(CartCount * data.data.data.price)} 원</p>
                 </CartAddBox>
               </DetailContentsBoxRight>
             </DetailContentsBox>
-            <StPuppleButton onClick={()=> AddToCart()}>장바구니</StPuppleButton>
+            <SubDetailContentsContainer>
+            <StPuppleButton width = {'260px'} height = {'60px'} onClick={()=> AddToCart()}>장바구니</StPuppleButton>
+
+            </SubDetailContentsContainer>
           </DetailContentsContainer>
 
         </RightBox>
@@ -174,7 +191,6 @@ background-image: url(${props => props.imageUrl});
   background-size: contain;
   background-repeat: no-repeat;
   background-position:center center;
-  border: 1px solid black;
 `
 
 
@@ -251,6 +267,12 @@ vertical-align: top;
 
 const DetailContentsContainer = styled.div`
   margin-top: 20px;
+`
+
+const SubDetailContentsContainer = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-end;
 `
 
 const DetailContentsBox = styled.div`

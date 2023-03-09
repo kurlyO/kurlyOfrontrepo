@@ -13,7 +13,7 @@ const ItemBox = styled.div`
   display: flex;
   flex-direction: column;
   width: 250px;
-  height: 540px;
+  height: 500px;
   transition: transform 0.2s ease-in-out;
 
   &:hover {
@@ -22,8 +22,8 @@ const ItemBox = styled.div`
 `;
 
 const ItemImage = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 250px;
+  height: 320px;
   background-image: url(${(props) => props.imageUrl});
   background-size: cover;
   background-position: center;
@@ -106,4 +106,35 @@ const CategoryButtonText = styled.a`
   font-weight: 700;
   color: rgb(95, 0, 128);
 `;
-export { ItemBoxContainer, ItemBox, ItemImage, ItemCartButton, PageContainer, CategoryContainer, CategoryButton, CategoryText, CategoryTitle, CategoryButtonText}
+
+const NameBox = styled.div`
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+`
+
+
+const GoodsName = styled.div`
+font-weight: 500;
+font-size: 20px;
+color: #333;
+line-height: 34px;
+letter-spacing: -0.5px;
+word-break: keep-all;
+margin-right: 20px;
+`
+
+
+const GoodsSubName = styled.div`
+  padding-top: 5px;
+    font-size: 15px;
+    font-weight: 400;
+    color: #333;
+    line-height: 19px;
+    letter-spacing: -0.5px;
+`
+
+export {GoodsName, GoodsSubName, NameBox, ItemBoxContainer, ItemBox, ItemImage, ItemCartButton, PageContainer, CategoryContainer, CategoryButton, CategoryText, CategoryTitle, CategoryButtonText}

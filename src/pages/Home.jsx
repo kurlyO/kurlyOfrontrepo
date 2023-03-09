@@ -6,7 +6,7 @@ import { useMutation, useQueries, useQuery } from 'react-query';
 import { getCateList, getMainList } from '../api/HomeAPI';
 import { cartAdd } from '../api/CartAPI';
 import CartModal from '../components/Modal/Modal';
-import {  ItemBoxContainer, ItemBox, ItemImage, ItemCartButton, PageContainer, CategoryContainer, CategoryButton, CategoryText, CategoryTitle, CategoryButtonText } from '../components/PageStyle/HomeStyle';
+import {  ItemBoxContainer, ItemBox, ItemImage, ItemCartButton, PageContainer, CategoryContainer, CategoryButton, CategoryText, CategoryTitle, CategoryButtonText, NameBox, GoodsName, GoodsSubName } from '../components/PageStyle/HomeStyle';
 
 function ShowItems(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +36,9 @@ function ShowItems(props) {
       console.log('아바다케다브라');
     }
   };
+  const checkPrice = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
 
   return (
     <>
@@ -44,8 +47,10 @@ function ShowItems(props) {
           <ItemImage imageUrl={props.imageUrl}>
             <ItemCartButton onClick={CartAdd} />
           </ItemImage>
-          <h3>{props.title}</h3>
-          <h3>{props.price}</h3>
+          <NameBox>
+            <GoodsName>{props.title}</GoodsName>
+            <GoodsSubName>{checkPrice(props.price)}원</GoodsSubName>
+          </NameBox>
         </ItemBox>
       </Link>
       {isOpen == true ? (

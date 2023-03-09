@@ -14,9 +14,7 @@ export const StInfoUl = styled.ul`
 
 export const StContainer = styled.div`
   display: flex;
-  height: 1000px;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
   margin-top: 10px;
   background-color: rgb(255, 255, 255);
