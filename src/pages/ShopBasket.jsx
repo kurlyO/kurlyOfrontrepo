@@ -1,4 +1,4 @@
-import  {  useEffect, useState, React } from 'react';
+import  React, {  useEffect, useState } from 'react';
 import { QueryClient, useQuery } from 'react-query';
 import styled from 'styled-components';
 import { StContainer, StCommonTitle } from '../elements/Common';
@@ -8,18 +8,30 @@ import { ModalCountButton, ModalCountBox, ModalCount } from '../components/Modal
 import { cartpost } from '../api/CartAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCartList, removeCartList,removeTargetCartList } from '../redux/cartCheckSlice';
-
-function Goods({ item }) {
+import { addToCartTotalPrice, removeCartTotalPrice, removeTargetCartTotalPrice } from '../redux/cartListSlice';
+import { Link } from 'react-router-dom';
+import { StPuppleButton } from '../elements/Button';
+function Goods(props) {
+  const [num, setNum] = useState(1);
+  useEffect(() => {
+    setNum(props.amount)
+  }, [])
+  //console.log(props)
+  //console.log(num)
+  //console.log(props.amount)
+  useEffect(() => {
+    setNum(props.amount)
+  }, [props.amount])
   const dispatch = useDispatch()
   const checkListRedux = useSelector((state) => state.cartCheckSlice)
   //console.log(item)
   const deleteMutate = useMutation(cartDel, {
     onSuccess: (data) => {
       console.log('해당 제품이 삭제 되었씀미다');
+      window.alert('장바구니에서 해당 제품을 삭제하였습니다')
       window.location.reload();
     },
   });
-
   const delHandler = (id) => {
     try {
       const response = deleteMutate.mutateAsync(id);
@@ -27,9 +39,6 @@ function Goods({ item }) {
       console.log(error);
     }
   };
- // console.log(item);
-
-  const [num, setNum] = useState(item.amount);
   const [selector, setSelector] = useState(true);
   const [totalPrice, setTotalPrice] = useState(null);
   //   console.log(selector);
@@ -41,12 +50,13 @@ function Goods({ item }) {
   });
 
   const putHandler = (event) => {
-    if (event.isPlus == true && item.goodsCount > num) {
+    if (event.isPlus == true && props.goodsCount > num) {
       console.log('추가추가');
       try {
         const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
         console.log(response);
         setNum(num + 1);
+        dispatch(addToCartTotalPrice({price : props.price}))
       } catch (error) {
         console.log(error);
       }
@@ -56,6 +66,7 @@ function Goods({ item }) {
         const response = putMutate.mutateAsync({ cartId: event.cartId, isPlus: event.isPlus });
         console.log(response);
         setNum(num - 1);
+        dispatch(removeTargetCartTotalPrice({price : props.price}))
       } catch (error) {
         console.log(error);
     }}
@@ -68,47 +79,66 @@ function Goods({ item }) {
     setSelector(!selector)
     if(selector == false){
       console.log("tttt")
-      dispatch(addToCartList({ cartId: item.cartId}))
+      dispatch(addToCartList({ cartId: props.cartId}))
     }
     else{
       console.log("ssss")
-      dispatch(removeTargetCartList({ cartId: item.cartId}))
+      dispatch(removeTargetCartList({ cartId: props.cartId}))
     }
     console.log(checkListRedux)
   };
   const backgroundImage = selector ? '/checkOn.svg' : '/checkOff.svg';
   return (
-    <ListBox key={item.id}>
+    <ListBox key={props.id}>
       <CheckButton onClick={() => selectorHandler()} backgroundImage = {backgroundImage} />
       {/*<input value={selector} onChange={selectorHandler} type={'checkbox'} />*/}
       
-
-      <ImgBox src={item.image} />
-      <span>{item.goodsName}</span>
+      <Link to={`/detail/${props.goodsId}`} style={{ color: 'black', textDecoration: 'none' }}>
+      <LinkBox>
+      <ImgBox src={props.image} />
+      <NameBox>
+      <span>{props.goodsName}</span>
+      </NameBox>
+      </LinkBox>
+      </Link>
       <ModalCountBox>
         <ModalCountButton
           imageUrl={'/minus.svg'}
-          onClick={() => putHandler({ isPlus: false, cartId: item.cartId })}
+          onClick={() => putHandler({ isPlus: false, cartId: props.cartId })}
         >
-          -
         </ModalCountButton>
         <ModalCount>{num}</ModalCount>
         <ModalCountButton
           imageUrl={'/plus.svg'}
-          onClick={() => putHandler({ isPlus: true, cartId: item.cartId })}
+          onClick={() => putHandler({ isPlus: true, cartId: props.cartId })}
         >
-          +
         </ModalCountButton>
       </ModalCountBox>
-      <span>{checkPrice(item.price * num)} 원</span>
-      <button onClick={() => delHandler(item.cartId)}>삭제</button>
+      <span>{checkPrice(props.price * num)} 원</span>
+        <ModalCountButton
+          imageUrl={'/deleteX.svg'}
+          onClick={() => delHandler(props.cartId)}
+        />
     </ListBox>
   );
 }
+const LinkBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+const NameBox = styled.div`
+display: flex; /* 텍스트를 가로 정렬할 flex 컨테이너로 설정합니다 */
+
+justify-content: flex-start; /* 가로 정렬을 중앙으로 설정합니다 */
+align-items: flex-start; /* 세로 정렬을 중앙으로 설정합니다 */
+width: 275px; /* div의 너비를 275px로 설정합니다 */
+word-wrap: break-word;
+`
 
 const CheckButton = styled.div`
-  width: 21px;
-  height: 21px;
+  width: 23px;
+  height: 23px;
   background-image: url(${props => props.backgroundImage});
   background-repeat: no-repeat;
   background-size: cover;
@@ -117,13 +147,18 @@ background-color: transparent;
 //-----------------------------------------------------------------------------------------------
 function ShopBasket() {
   const dispatch = useDispatch()
-
   const checkListRedux = useSelector((state) => state.cartCheckSlice)
-  const [finalPrice, setFinalPrice] = useState();
+  const checkPriceRedux = useSelector((state) => state.cartListSlice)
+  const [finalPrice, setFinalPrice] = useState(0);
   const [cartLastList, setCartLastList] = useState()
-  const [cartData, setCartData] = useState()
+  let [cartData, setCartData] = useState()
   const [checkList, SetCheckList] = useState([])
-  const getCart = useQuery(['cart'], cartList);
+  const getCart = useQuery(['cart'], cartList,{onSuccess: (data) => {
+    console.log(data.data.data)
+    console.log('zzzzzzzzzzzzz')
+    setCartData(data.data.data)
+    console.log(finalPrice)
+  }});
 
   const postMutate = useMutation(cartpost, {
     onSuccess: (data) => {
@@ -132,27 +167,34 @@ function ShopBasket() {
     },
   });
 useEffect(() => {
-  if(getCart.data){
+  if(getCart?.data){
+    //setFinalPrice(0)
+    dispatch(removeCartTotalPrice())
     setCartData(getCart.data.data.data);
-    console.log('a')
+    console.log(getCart.data.data.data)
     let list = { "cartIdList" : []}
     for(let i = 0; i < getCart.data.data.data.cold.length; i++){
       checkList.push(false)
       dispatch(addToCartList({ cartId: getCart.data.data.data.cold[i].cartId}))
+      dispatch(addToCartTotalPrice( {price : (getCart.data.data.data.cold[i].price * getCart.data.data.data.cold[i].amount)}))
       list["cartIdList"].push(getCart.data.data.data.cold[i].cartId)
-      console.log(getCart.data.data.data.cold[i].cartId)
+      setFinalPrice(finalPrice + (getCart.data.data.data.cold[i].price * getCart.data.data.data.cold[i].amount))
     }
     for(let i = 0; i < getCart.data.data.data.frozen.length; i++){
       checkList.push(false)
       dispatch(addToCartList({ cartId: getCart.data.data.data.frozen[i].cartId}))
+      //
+      dispatch(addToCartTotalPrice({price : (getCart.data.data.data.frozen[i].price * getCart.data.data.data.frozen[i].amount)}))
       list["cartIdList"].push(getCart.data.data.data.frozen[i].cartId)
-      console.log(getCart.data.data.data.frozen[i].cartId)
+      //setFinalPrice(finalPrice + (getCart.data.data.data.frozen[i].price * getCart.data.data.data.frozen[i].amount))
     }
     for(let i = 0; i < getCart.data.data.data.room_temperature.length; i++){
       checkList.push(false)
       dispatch(addToCartList({ cartId: getCart.data.data.data.room_temperature[i].cartId}))
+      
+      dispatch(addToCartTotalPrice({price : (getCart.data.data.data.room_temperature[i].price * getCart.data.data.data.room_temperature[i].amount)}))
       list["cartIdList"].push(getCart.data.data.data.room_temperature[i].cartId)
-      console.log(getCart.data.data.data.room_temperature[i].cartId)
+      //setFinalPrice(finalPrice + (getCart.data.data.data.room_temperature[i].price * getCart.data.data.data.room_temperature[i].amount))
     }
     setCartLastList(list)
   }
@@ -163,6 +205,7 @@ console.log(checkList)
 console.log(cartData)
 */
 console.log(checkListRedux)
+console.log(checkPriceRedux)
 
 const CheckHandler = (e) => {
   let List ={"cartIdList" : []}
@@ -173,6 +216,13 @@ const CheckHandler = (e) => {
       }
   }
   setCartLastList(List)
+  console.log(checkListRedux)
+  try {
+    const response = postMutate.mutateAsync(checkListRedux);
+    console.log(checkListRedux);
+  } catch (error) {
+    console.lof(error);
+  }
 }
   if (getCart.isLoading) {
     <h1>상품목록 가져오는중</h1>;
@@ -183,7 +233,8 @@ const CheckHandler = (e) => {
   if (!getCart.data.data || getCart.data.data.length === 0) {
     return <div>장바구니 채워줘</div>;
   }
-  console.log('찜목록 불러오기 성공', getCart.data.data.data);
+  //console.log('찜목록 불러오기 성공', getCart.data.data.data);
+  //console.log(cartData)
   const orderButtonHandler = (cartIdList) => {
     try {
       const response = postMutate.mutateAsync({ cartIdList });
@@ -198,46 +249,35 @@ const CheckHandler = (e) => {
 
   return (
     <StContainer>
-      <StCommonTitle>
         <StCommonTitle>장바구니</StCommonTitle>
-      </StCommonTitle>
       <div>
         <ConcludeBox>
-          <ShopBox>
-            <EntireInT>
-              <EntireInCon1>
-                <div style={{ display: 'flex', gap: '20px' }}>
-                  <EntireInInput type="checkbox" />
-                  <div style={{ width: '200px', fontWeight: '500', fontSize: '15px' }}>
-                    전체선택 (0/0)
-                  </div>
-                </div>
-              </EntireInCon1>
-            </EntireInT>
-          </ShopBox>
+          <div>
           <EntireMidBoxs>
-            {cartData?.cold ? <div>냉장식품</div> : null}
+            {cartData?.cold.length > 0 ? <div>냉장식품</div> : null}
             {cartData?.cold.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
-                  {cartData?.cold && cartData?.cold.length > 0 ? <Goods item={item} /> : null}
+                  {cartData?.cold && cartData?.cold.length > 0 ?
+                   <Goods cartPrice = {checkPriceRedux} cartId={item.cartId} goodsId={item.goodsId} amount={item.amount} goodsCount={item.goodsCount} goodsName={item.goodsName} image={item.image} price={item.price} /> : null}
                 </VariousGoods>
               );
             })}
-            {cartData?.frozen ? <div>냉동식품</div> : null}
+            {cartData?.frozen.length > 0 ? <div>냉동식품</div> : null}
             {cartData?.frozen.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
-                  {cartData?.frozen && cartData?.frozen.length > 0 ? <Goods item={item} /> : null}
+                  {cartData?.frozen && cartData?.frozen.length > 0 ?
+                   <Goods cartPrice = {checkPriceRedux} cartId={item.cartId} goodsId={item.goodsId} amount={item.amount} goodsCount={item.goodsCount} goodsName={item.goodsName} image={item.image} price={item.price} /> : null}
                 </VariousGoods>
               );
             })}
-            {cartData?.room_temperature ? <div>상온식품</div> : null}
+            {cartData?.room_temperature.length > 0 ? <div>상온식품</div> : null}
             {cartData?.room_temperature.map((item) => {
               return (
                 <VariousGoods key={`item-${item.cartId}`}>
                   {cartData?.room_temperature && cartData?.room_temperature.length > 0 ? (
-                    <Goods item={item} />
+                    <Goods cartPrice = {checkPriceRedux} cartId={item.cartId} goodsId={item.goodsId} amount={item.amount} goodsCount={item.goodsCount} goodsName={item.goodsName} image={item.image} price={item.price}  />
                   ) : null}
                 </VariousGoods>
               );
@@ -248,13 +288,11 @@ const CheckHandler = (e) => {
               </React.Fragment>
             )}
           </EntireMidBoxs>
-        </ConcludeBox>
-      </div>
-
+          </div>
       <TotalPay>
         <GoodsBox>
           <GoodsBoxText>상품금액</GoodsBoxText>
-          <GoodsBoxText2></GoodsBoxText2>
+          <GoodsBoxText2>{checkPriceRedux.cartListPrice}원</GoodsBoxText2>
         </GoodsBox>
         <GoodsBox>
           <GoodsBoxText>배송비</GoodsBoxText>
@@ -262,92 +300,39 @@ const CheckHandler = (e) => {
         </GoodsBox>
         <GoodsBox>
           <GoodsBoxText>결정예정금액</GoodsBoxText>
-          <GoodsBoxText2>2원</GoodsBoxText2>
+          <GoodsBoxText2>{checkPriceRedux.cartListPrice}원</GoodsBoxText2>
         </GoodsBox>
-        <button
-          onClick={() => CheckHandler()
-            /*orderButtonHandler(
-              Object.keys(cartData)
-                .map((key) => cartData[key].map((item) => item.cartId))
-                .flat()
-            )*/
-          }
-        >
+        <StPuppleButton onClick={() => CheckHandler()}>
           주문하기
-        </button>
+        </StPuppleButton>
       </TotalPay>
+        </ConcludeBox>
+      </div>
+
     </StContainer>
   );
 }
 
+const CategoryBox = styled.div`
+  
+  
+`
+
 const ConcludeBox = styled.div`
-  width: 742px;
-  height: 942px;
-  padding: 10px 10px 10px 10px;
-  margin-right: 100px;
-  gap: 10px;
-  border: 1px solid green;
-`;
-
-const ShopBox = styled.div`
-  display: flex;
-  align-items: center;
-  width: 721px;
-  height: 25px;
-  padding: 18px 10px 16px 2px;
-  font-size: 25px;
-  line-height: 26px;
-  font-weight: 500;
-  border-bottom: 1px solid rgb(51, 51, 51);
-`;
-
-const EntireT = styled.div`
-  display: flex;
-  align-items: center;
-  width: 721px;
-  height: 25px;
-  padding: 18px 10px 16px 2px;
-  font-size: 25px;
-  line-height: 26px;
-  font-weight: 500;
-`;
-
-const EntireInT = styled.div`
-  display: flex;
-  align-items: center;
-  width: 210px;
-  height: 22px;
-`;
-
-const EntireInCon1 = styled.label`
-  display: inline-flex;
-  align-items: center;
-  width: 117px;
-  height: 22px;
-  gap: 10px;
-  font-size: 14px;
-  line-height: 26px;
-  padding: 0;
-  color: #333;
-`;
-
-const EntireInInput = styled.input`
-  box-sizing: border-box;
-  padding: 0;
-  cursor: pointer;
-`;
-
-const EntireMidBox = styled.div`
-  width: 700px;
-  flex-direction: column;
-  /* position: absolute; */
-  margin-top: 59px;
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding-top: 6px;
+width: 1050px;
+padding: 10px 10px 10px 10px;
+margin-right: 100px;
+gap: 10px;
 `;
 
 const EntireMidBoxs = styled.div`
   width: 690px;
   min-height: 100px;
-  border: 1px solid yellow;
   gap: 20px;
 `;
 //#eee4e48e;
@@ -357,12 +342,9 @@ const TotalPay = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 284px;
+  width: 250px;
   height: 254px;
-  position: absolute;
   top: 0;
-  margin-top: 480px;
-  margin-left: 990px;
   gap: 30px;
   padding: 19px 18px 18px 20px;
   border: 1px solid #f2f2f2;
@@ -402,17 +384,24 @@ const VariousGoods = styled.h4`
 `;
 
 const ListBox = styled.div`
+border-top: 1px solid rgb(244, 244, 244);
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+  justify-content: space-between;
   margin-right: 20px;
-  padding: 15px 5px 15px 0px;
+  padding: 5px 15px 0px;
   width: 742px;
   height: 100px;
+  margin: 0px;
+  & > * {
+    font-size: 11pt;
+  }
 `;
 
 const ImgBox = styled.img`
-  width: 68px;
+  width: 60px;
   height: 78px;
+  margin-right: 20px;
 `;
 
 export default ShopBasket;
