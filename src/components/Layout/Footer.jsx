@@ -9,10 +9,25 @@ const FooterStyles = styled.footer`
   justify-content: center;
 `;
 
+const ImgWrapper = styled.div`
+  max-width: 100%;
+  max-height: 100%;
+`;
+
+const FooterImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;
+
 function Footer() {
   return (
-    <FooterStyles src={'Footer.PNG'}>
-      <div>푸터푸터</div>
+    <FooterStyles>
+      <ImgWrapper>
+        <FooterImg src="/img/Footer.PNG" alt="Footer" />
+      </ImgWrapper>
+
+      <div></div>
     </FooterStyles>
   );
 }
