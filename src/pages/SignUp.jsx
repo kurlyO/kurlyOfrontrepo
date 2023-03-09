@@ -149,12 +149,29 @@ function SignUp() {
       );
       return;
     }
+
+    if (password !== passwordConfirm) {
+      alert('비밀번호가 서로 다릅니다');
+      return;
+    }
     if (!validateemail(email)) {
       alert('이메일 형식으로 맞게 입력해주세요.');
       return;
     }
-    if (password !== passwordConfirm) {
-      alert('비밀번호가 서로 다릅니다');
+    if (!join.phone) {
+      alert('번호를 입력해주세요');
+      return;
+    }
+    if (!join.address) {
+      alert('주소를 입력해주세요');
+      return;
+    }
+    if (!join.gender) {
+      alert('성별란 체크 부탁드려요');
+      return;
+    }
+    if (!join.birth) {
+      alert('출생연월을 입력해주세요');
       return;
     }
 
@@ -316,6 +333,13 @@ function SignUp() {
             naming={'phone'}
             holder={'숫자만 입력해주세요'}
             value={join.phone}
+            onChange={handleInputChange}
+          />
+          <InputComps
+            type={'text'}
+            content={'주소'}
+            naming={'address'}
+            holder={'주소를 입력해주세요'}
             onChange={handleInputChange}
           />
 
