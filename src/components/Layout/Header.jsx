@@ -19,6 +19,7 @@ const HeaderStyles = styled.header`
   align-items: center;
   padding-left: 20px;
   box-shadow: rgb(0 0 0 / 7%) 0px 3px 4px 0px;
+  justify-content: center;
 `;
 
 const CategoryBox = styled.div`
@@ -51,7 +52,7 @@ const StButtonBox = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
-  margin: 0px 10px 70px 0px;
+  margin: 0px 500px 70px 0px;
   right: 0;
   font-size: 12px;
 `;
@@ -67,7 +68,7 @@ const TopButton = styled.button`
 const ShopButtonBox = styled.div`
   position: absolute;
   right: 0;
-  margin: 50px 20px 0px 20px;
+  margin: 50px 500px 0px 20px;
 `;
 
 const ShopButton = styled.button`
@@ -87,15 +88,11 @@ function Header() {
 
   const navigate = useNavigate();
   const logoutHandler = async () => {
-    try {
-      removeCookie('token');
-      console.log('토큰삭제되었니?', removeCookie(token));
-      alert('로그아웃되었습니다');
-      navigate('/');
-      window.location.reload();
-    } catch (error) {
-      console.log(error);
-    }
+    localStorage.removeItem('username');
+    removeCookie('token');
+    alert('로그아웃되었습니다');
+    navigate('/');
+    window.location.reload();
   };
 
   return (

@@ -9,11 +9,12 @@ const FooterStyles = styled.footer`
   justify-content: center;
 `;
 
+//이미지 비율 유지하기
 const ImgWrapper = styled.div`
   max-width: 100%;
   max-height: 100%;
 `;
-
+//이미지 크기
 const FooterImg = styled.img`
   width: 100%;
   height: 100%;
