@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { getCookie, removeCookie } from '../../utils/cookies';
 import styled from 'styled-components';
+import { useState } from 'react';
+import axios from 'axios';
 
 const UserName = styled.span`
   padding-top: 5px;
@@ -84,11 +86,16 @@ function Header() {
   console.log(token);
 
   const navigate = useNavigate();
-  const logoutHandler = () => {
-    const id = removeCookie(token);
-    console.log(id);
-    alert('로그아웃되었습니다');
-    navigate('/');
+  const logoutHandler = async () => {
+    try {
+      removeCookie('token');
+      console.log('토큰삭제되었니?', removeCookie(token));
+      alert('로그아웃되었습니다');
+      navigate('/');
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -145,7 +152,9 @@ function Header() {
             </TopButton>
           </>
         ) : (
-          <button onClick={logoutHandler}>로그아웃</button>
+          <TopButton color="rgb(95, 0, 128)" onClick={logoutHandler}>
+            로그아웃
+          </TopButton>
         )}
       </StButtonBox>
 
@@ -160,5 +169,9 @@ function Header() {
     </HeaderStyles>
   );
 }
+
+const LogoutButton = styled.button`
+  display: none;
+`;
 
 export default Header;
