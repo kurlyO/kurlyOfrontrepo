@@ -13,7 +13,7 @@ const UserName = styled.span`
   letter-spacing: -0.35px;
 `;
 const HeaderStyles = styled.header`
-  width: 100%;
+  width: 90%;
   height: 100px;
   display: flex;
   align-items: center;
