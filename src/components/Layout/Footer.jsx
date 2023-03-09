@@ -7,6 +7,7 @@ const FooterStyles = styled.footer`
   background-image: url(${(props) => props.imageurl});
   align-items: center;
   justify-content: center;
+  margin-top: 50px;
 `;
 
 //이미지 비율 유지하기
